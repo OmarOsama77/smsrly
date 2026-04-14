@@ -46,7 +46,7 @@ fun Home(navController: NavController) {
         modifier = Modifier.padding(top = 30.dp, start = 10.dp, end = 10.dp)
     ) {
 
-        item { HomeHeader(user.value,userState.value) }
+        item { HomeHeader(user.value,userState.value,navController) }
 
         item { Spacer(Modifier.height(20.dp)) }
 

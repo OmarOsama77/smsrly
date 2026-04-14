@@ -8,10 +8,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,6 +18,8 @@ import com.example.smsrly.presentation.ui.screens.auth.splash.SplashRoute
 import com.example.smsrly.presentation.ui.screens.auth.splash.SplashScreen
 import com.example.smsrly.presentation.ui.screens.bottomnavbar.MainRoute
 import com.example.smsrly.presentation.ui.screens.bottomnavbar.MainScreen
+import com.example.smsrly.presentation.ui.screens.chats.Chats
+import com.example.smsrly.presentation.ui.screens.chats.ChatsRoute
 import com.example.smsrly.presentation.ui.screens.home.Home
 import com.example.smsrly.presentation.ui.screens.home.HomeRoute
 import com.example.smsrly.presentation.ui.screens.locationPicker.MapPicker
@@ -35,6 +33,10 @@ import com.example.smsrly.presentation.ui.screens.settings.EditProfileRoute
 import com.example.smsrly.presentation.ui.screens.settings.Settings
 import com.example.smsrly.presentation.ui.screens.settings.SettingsRoute
 import com.example.smsrly.presentation.ui.screens.showdetails.ShowDetailsRoute
+import com.example.smsrly.presentation.ui.theme.slideInFromLeft
+import com.example.smsrly.presentation.ui.theme.slideInFromRight
+import com.example.smsrly.presentation.ui.theme.slideOutToLeft
+import com.example.smsrly.presentation.ui.theme.slideOutToRight
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -46,8 +48,14 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
+
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = SplashRoute) {
+            NavHost(navController = navController, startDestination = SplashRoute,
+                enterTransition = { slideInFromRight },
+                exitTransition = { slideOutToLeft },
+                popEnterTransition = { slideInFromLeft },
+                popExitTransition = { slideOutToRight }
+                ) {
                 composable<MainRoute> {
                     MainScreen(navController)
                 }
@@ -75,6 +83,14 @@ class MainActivity : ComponentActivity() {
                 composable<MyAddsRoute> { MyAdds(navController) }
                 ShowDetailsRoute(navController)
                 composable<EditProfileRoute> { EditProfile(navController) }
+                composable<ChatsRoute> (
+                    enterTransition = { slideInFromRight },
+                    exitTransition = { slideOutToLeft },
+                    popEnterTransition = { slideInFromLeft },
+                    popExitTransition = { slideOutToRight }
+                ){
+                    Chats()
+                }
             }
         }
     }

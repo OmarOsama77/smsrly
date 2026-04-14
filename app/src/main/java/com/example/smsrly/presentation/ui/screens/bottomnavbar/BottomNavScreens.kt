@@ -12,4 +12,5 @@ sealed class BottomNavScreen(
     object Adds : BottomNavScreen("Adds",R.drawable.add,R.drawable.addselected)
     object MyAdds : BottomNavScreen("MyAdds",R.drawable.savebottom,R.drawable.savedselected)
     object Settings : BottomNavScreen("Settings",R.drawable.settings,R.drawable.settingsselected)
+
 }

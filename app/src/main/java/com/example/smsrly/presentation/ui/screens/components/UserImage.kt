@@ -21,7 +21,7 @@ import com.example.smsrly.R
 fun UserImage(imageUrl: String?) {
     Box(
         modifier = Modifier
-            .size(50.dp)
+            .size(60.dp)
             .clip(RoundedCornerShape(40.dp))
 
     ) {
@@ -29,13 +29,13 @@ fun UserImage(imageUrl: String?) {
             Image(
                 painter = painterResource(R.drawable.anonymous),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.size(60.dp),
             )
         } else {
             AsyncImage(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .size(90.dp),
+                    .size(60.dp),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 model = imageUrl
