@@ -42,7 +42,7 @@ class SignupViewModel @Inject constructor(
         otpCode: String,
         userImage:String?
     ) {
-        val user = User (firstName,lastName,email,latitude,longitude,phoneNumber,userImage)
+        val user = User (firstName,lastName,email,latitude,longitude,null,phoneNumber,userImage)
         viewModelScope.launch {
             _signupState.value = SignupState.Loading
             val response = signupUseCase.signup(user, password, confirmPass, otpCode)

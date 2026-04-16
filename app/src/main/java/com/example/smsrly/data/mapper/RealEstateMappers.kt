@@ -55,6 +55,7 @@ fun ContentItemDto.toDomain(): RealEstate {
         },
         userInfo = this.userInfo.toDomain(),
         id = this.id,
+        userId = this.userId,
         isSaved = this.is_save,
         isRequested = this.is_requested,
         requestedUsers = null
@@ -84,6 +85,7 @@ fun UserUploadedRealEstateDto.toDomain(): RealEstate{
         latitude = this.latitude,
         longitude = this.longitude,
         id = this.id,
+
         isSaved = null,
         isRequested = null,
         images = this.images.map {
@@ -91,6 +93,7 @@ fun UserUploadedRealEstateDto.toDomain(): RealEstate{
         },
         rooms = this.room_number,
         userInfo = null,
+        userId = null,
         requestedUsers = this.requests.map {
             it.toDomain()
         }

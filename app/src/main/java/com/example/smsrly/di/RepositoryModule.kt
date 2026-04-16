@@ -1,10 +1,12 @@
 package com.example.smsrly.di
 
 import com.example.smsrly.data.repository.AuthRepo
+import com.example.smsrly.data.repository.FirebaseRepo
 import com.example.smsrly.data.repository.RealStateRepo
 import com.example.smsrly.data.repository.TokenRepo
 import com.example.smsrly.data.repository.UserRepo
 import com.example.smsrly.domain.repository.IAuthRepo
+import com.example.smsrly.domain.repository.IFirebaseRepo
 import com.example.smsrly.domain.repository.IRealEstateRepo
 import com.example.smsrly.domain.repository.ITokenRepo
 import com.example.smsrly.domain.repository.IUserRepo
@@ -34,6 +36,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindRealStateRepo(realState: RealStateRepo): IRealEstateRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindFirebaseRepo(firebaseRepo: FirebaseRepo): IFirebaseRepo
 
 }
 

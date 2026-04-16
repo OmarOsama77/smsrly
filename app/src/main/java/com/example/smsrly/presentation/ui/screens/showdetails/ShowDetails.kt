@@ -94,9 +94,11 @@ fun ShowDetails(navController: NavController, realEstate: RealEstate, showReques
 
                 Spacer(Modifier.height(30.dp))
                 ShowDetailsCard(
+                    navController,
                     if (showRequestedUsers) currentUser.value?.imageUrl else realEstate.userInfo?.userImage,
                     if (showRequestedUsers) "${currentUser.value?.firstName} ${currentUser.value?.lastName}" else realEstate.userInfo!!.userName,
-                    realEstate.desc
+                    realEstate.desc,
+                    realEstate.userId!!
                 )
 
                 Spacer(Modifier.height(14.dp))
@@ -104,7 +106,7 @@ fun ShowDetails(navController: NavController, realEstate: RealEstate, showReques
                 Spacer(Modifier.height(14.dp))
                 if(showRequestedUsers){
                     UploadedPriceSection(realEstate.price,{
-                        //to delete a real estate
+
                     })
                 }else{
                     PriceSection(realEstate.id!!, realEstate.price, viewModel)

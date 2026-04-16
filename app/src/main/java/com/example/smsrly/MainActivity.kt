@@ -20,6 +20,9 @@ import com.example.smsrly.presentation.ui.screens.bottomnavbar.MainRoute
 import com.example.smsrly.presentation.ui.screens.bottomnavbar.MainScreen
 import com.example.smsrly.presentation.ui.screens.chats.Chats
 import com.example.smsrly.presentation.ui.screens.chats.ChatsRoute
+import com.example.smsrly.presentation.ui.screens.chats.conversation.Conversation
+import com.example.smsrly.presentation.ui.screens.chats.conversation.ConversationRoute
+import com.example.smsrly.presentation.ui.screens.chats.conversation.conversation
 import com.example.smsrly.presentation.ui.screens.home.Home
 import com.example.smsrly.presentation.ui.screens.home.HomeRoute
 import com.example.smsrly.presentation.ui.screens.locationPicker.MapPicker
@@ -50,12 +53,9 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = SplashRoute,
-                enterTransition = { slideInFromRight },
-                exitTransition = { slideOutToLeft },
-                popEnterTransition = { slideInFromLeft },
-                popExitTransition = { slideOutToRight }
-                ) {
+            NavHost(
+                navController = navController, startDestination = SplashRoute,
+            ) {
                 composable<MainRoute> {
                     MainScreen(navController)
                 }
@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 signup(navController)
-
+                conversation(navController)
                 composable<OtpRoute> {
                     Otp(navController)
                 }
@@ -83,13 +83,14 @@ class MainActivity : ComponentActivity() {
                 composable<MyAddsRoute> { MyAdds(navController) }
                 ShowDetailsRoute(navController)
                 composable<EditProfileRoute> { EditProfile(navController) }
-                composable<ChatsRoute> (
+
+                composable<ChatsRoute>(
                     enterTransition = { slideInFromRight },
                     exitTransition = { slideOutToLeft },
                     popEnterTransition = { slideInFromLeft },
                     popExitTransition = { slideOutToRight }
-                ){
-                    Chats()
+                ) {
+                    Chats(navController)
                 }
             }
         }

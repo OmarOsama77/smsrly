@@ -6,7 +6,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 
-
+    id("com.google.gms.google-services")
 
 }
 android {
@@ -90,7 +90,8 @@ dependencies {
     implementation("androidx.paging:paging-compose:3.3.6")
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.0")
 
-
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-database-ktx")
 
 
 

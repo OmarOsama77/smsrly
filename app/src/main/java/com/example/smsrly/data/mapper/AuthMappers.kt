@@ -9,12 +9,14 @@ import com.example.smsrly.domain.models.User
 
 fun SignupSuccessDto.toDomain(): AuthTokens{
     return AuthTokens(
+        id,
         access_token,
         refresh_token
     )
 }
 fun LoginSuccessDto.toDomain(): AuthTokens{
     return AuthTokens(
+        id,
         access_token,
         refresh_token
     )
@@ -31,6 +33,6 @@ fun GetUserResponse.toDomain(): User{
         longitude = longitude,
         imageUrl = image_url,
         phoneNumber = phone_number,
-
+        userId = user_id
     )
 }

@@ -32,6 +32,9 @@ class UploadRealStateUseCase @Inject constructor(
 
 
     fun validation(realState: RealEstate): String {
+        if(realState.images.size==0){
+            return "Required at least 1 image"
+        }
         if (realState.title.length < 10 || realState.title.length > 50) {
             return "title must be between 10 and 50 characters"
         }

@@ -8,6 +8,7 @@ data class ContentItemDto(
     val images:List<String>,
     val is_save: Boolean,
     val id:Int,
+    val userId:Int,
     val title:String,
     val description:String,
     val area: Double,

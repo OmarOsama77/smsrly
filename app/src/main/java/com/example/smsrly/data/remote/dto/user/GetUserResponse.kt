@@ -6,6 +6,7 @@ data class GetUserResponse (
     val firstname : String,
     val lastname:String,
     val email : String,
+    val user_id:Int,
     val latitude:Double,
     val longitude : Double,
 )

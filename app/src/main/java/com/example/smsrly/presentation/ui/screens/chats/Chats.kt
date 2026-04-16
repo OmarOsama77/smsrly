@@ -1,34 +1,38 @@
 package com.example.smsrly.presentation.ui.screens.chats
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.smsrly.presentation.ui.screens.chats.components.ChatCard
+import com.example.smsrly.presentation.ui.screens.chats.viewmodel.ChatsViewModel
 import com.example.smsrly.presentation.ui.screens.components.UserImage
-import com.mapbox.maps.extension.style.expressions.dsl.generated.mod
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object ChatsRoute
 
 @Composable
-fun Chats(modifier: Modifier = Modifier) {
+fun Chats(navController: NavController) {
+    val viewModel : ChatsViewModel = hiltViewModel()
+    val user = viewModel.user.collectAsState()
     LazyColumn(
-        modifier = Modifier.padding(top = 30.dp, start = 10.dp, end = 10.dp).fillMaxWidth(),
+        modifier = Modifier.padding(top = 30.dp, start = 10.dp, end = 10.dp, bottom = 10.dp).fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         item {
@@ -38,11 +42,13 @@ fun Chats(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("Chats", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                UserImage(null)
+                UserImage(user.value?.imageUrl)
             }
         }
+
+
         items(12){
-            ChatCard()
+            ChatCard(navController)
             HorizontalDivider(modifier = Modifier.padding(top = 12.dp),color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
         }
 

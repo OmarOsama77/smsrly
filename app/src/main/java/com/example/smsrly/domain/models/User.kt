@@ -9,6 +9,7 @@ data class User(
     val email:String,
     val latitude:Double?,
     val longitude:Double?,
+    val userId:Int?=null,
     val phoneNumber:String,
     var imageUrl: String? = null
 )

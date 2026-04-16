@@ -4,9 +4,13 @@ package com.example.smsrly.domain.usecase.authusecases
 import com.example.smsrly.domain.models.AuthTokens
 import com.example.smsrly.domain.models.User
 import com.example.smsrly.domain.repository.IAuthRepo
+import com.example.smsrly.domain.repository.IFirebaseRepo
 import javax.inject.Inject
 
-class SignupUseCase @Inject constructor(private val authRepo: IAuthRepo) {
+class SignupUseCase @Inject constructor(
+    private val authRepo: IAuthRepo,
+    private val firebaseRepo: IFirebaseRepo
+) {
 
 
     suspend fun signup(
@@ -17,7 +21,9 @@ class SignupUseCase @Inject constructor(private val authRepo: IAuthRepo) {
     ): Result<AuthTokens> {
         val res = validateData(password, confirmPass, user.phoneNumber)
         if (res == "Success") {
-            return authRepo.signup(user, password, otpCode)
+            return authRepo.signup(user, password, otpCode).onSuccess { it ->
+                firebaseRepo.uploadUserId(it.id)
+            }
         }
         return Result.failure(Exception(res))
     }

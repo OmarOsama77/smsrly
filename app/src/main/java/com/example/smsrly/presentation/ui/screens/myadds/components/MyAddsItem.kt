@@ -53,6 +53,7 @@ fun MyAddsItem(
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
             model = realEstate.images[0],
+            error = painterResource(id = R.drawable.noimage),
         )
         Box(
             modifier = Modifier

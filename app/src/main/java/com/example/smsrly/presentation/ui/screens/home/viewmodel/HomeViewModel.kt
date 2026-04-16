@@ -1,5 +1,6 @@
 package com.example.smsrly.presentation.ui.screens.home.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smsrly.domain.models.RealEstate
@@ -81,6 +82,7 @@ class HomeViewModel @Inject constructor(
                 _allRealEstatesState.value = AllRealEstatesState.Success
             } else {
                 val message = res.exceptionOrNull()?.message?:"Unknown error"
+                Log.d("Hey omar i failed to fetch all",message)
                 _allRealEstatesState.value =
                     AllRealEstatesState.Failed(message)
                 _errorEvent.emit(message)

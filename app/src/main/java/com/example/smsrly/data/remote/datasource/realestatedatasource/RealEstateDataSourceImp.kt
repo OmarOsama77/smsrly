@@ -31,6 +31,7 @@ class RealEstateDataSourceImp @Inject constructor(
                 return Result.success(id)
             } else {
                 val errorJson = response.errorBody()?.string()
+                Log.d("or the ",errorJson.toString())
                 errorJson?.let {
                     val adapter = moshi.adapter(FailedDto::class.java)
                     val errorResponse = adapter.fromJson(it)
@@ -39,7 +40,7 @@ class RealEstateDataSourceImp @Inject constructor(
                 return Result.failure(Exception("Failed to upload"))
             }
         } catch (e: Exception) {
-
+            Log.d("Ya omar there is e r ",e.toString())
             return Result.failure(Exception("Network issue"))
         }
     }

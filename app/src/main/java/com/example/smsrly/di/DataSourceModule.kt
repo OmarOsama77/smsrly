@@ -4,6 +4,8 @@ import com.example.smsrly.data.local.datasource.tokendatasource.ITokenLocalDataS
 import com.example.smsrly.data.local.datasource.tokendatasource.TokenLocalDataSource
 import com.example.smsrly.data.remote.datasource.authdatasource.AuthDataSourceImp
 import com.example.smsrly.data.remote.datasource.authdatasource.IAuthDataSource
+import com.example.smsrly.data.remote.datasource.firebasedatasource.FirebaseDataSource
+import com.example.smsrly.data.remote.datasource.firebasedatasource.IFirebaseDataSource
 import com.example.smsrly.data.remote.datasource.realestatedatasource.IRealEstateDataSource
 import com.example.smsrly.data.remote.datasource.realestatedatasource.RealEstateDataSourceImp
 import com.example.smsrly.data.remote.datasource.userdatasource.IUserDataSource
@@ -36,4 +38,9 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindUserDataSource(userDataSource: UserDataSource): IUserDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindFirebaseDataSource(firebaseDataSource: FirebaseDataSource): IFirebaseDataSource
+
 }

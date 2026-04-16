@@ -15,6 +15,7 @@ data class RealEstate(
     val country: String,
     val latitude: Double,
     val id : Int?,
+    val userId:Int?,
     val longitude: Double,
     val rooms: Int,
     val images: List<String>,
