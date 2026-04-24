@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.smsrly.presentation.ui.screens.myadds.screens.uploaded.viewmodel.UploadedViewModel
 import com.example.smsrly.presentation.ui.screens.showdetails.components.CustomDetailsButton
+import com.example.smsrly.utility.formatPrice
 
 @Composable
 fun UploadedPriceSection(price: Double,onClick:()->Unit) {
@@ -22,7 +23,8 @@ fun UploadedPriceSection(price: Double,onClick:()->Unit) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         //can only delete
-        Text("${price} EGP", fontSize = 17.sp, fontWeight = FontWeight.Medium)
+
+        Text("${formatPrice(price)} EGP", fontSize = 17.sp, fontWeight = FontWeight.Medium)
         CustomDetailsButton({
                 onClick()
         }, "Delete Realestate", Color.Red,)

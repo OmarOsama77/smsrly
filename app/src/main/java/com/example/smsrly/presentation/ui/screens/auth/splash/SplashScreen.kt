@@ -39,7 +39,7 @@ fun SplashScreen(navController: NavController) {
                   is SplashEvents.Success->{
                       delay(1000)
                       navController.navigate(MainRoute){
-                          popUpTo(SplashRoute){
+                          popUpTo(0){
                               inclusive = true
                           }
                       }

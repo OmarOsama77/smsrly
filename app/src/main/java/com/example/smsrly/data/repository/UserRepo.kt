@@ -1,11 +1,16 @@
 package com.example.smsrly.data.repository
 
+import android.util.Log
 import com.example.smsrly.data.mapper.toDomain
 import com.example.smsrly.data.remote.datasource.userdatasource.IUserDataSource
+import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import com.example.smsrly.domain.models.User
+import com.example.smsrly.domain.models.UserInfo
 import com.example.smsrly.domain.repository.IUserRepo
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -45,6 +50,14 @@ class UserRepo @Inject constructor(
         }else{
             return Result.failure(res.exceptionOrNull()!!)
         }
+    }
+
+    override suspend fun getUsersInfo(usersIds: List<String>):Result<Map<String,UserInfo>>  {
+         return userDataSource.getUsersDataById(usersIds).map {oldMap->
+             oldMap.mapValues {
+                 it.value.toDomain()
+             }
+         }
     }
 
 }

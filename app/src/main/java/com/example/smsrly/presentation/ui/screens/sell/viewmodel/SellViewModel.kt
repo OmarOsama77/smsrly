@@ -80,7 +80,6 @@ class SellViewModel @Inject constructor(
                     _selectedLocation.value?.get("country") as String,
                     _selectedLocation.value?.get("latitude") as Double,
                      null,
-                    null,
                     _selectedLocation.value?.get("longitude") as Double,
                     rooms.toInt(),
                     _selectedImages.value.map {

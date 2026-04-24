@@ -80,8 +80,10 @@ class RealEstateDataSourceImp @Inject constructor(
             if(res.isSuccessful){
                 return Result.success(res.body()!!)
             }
+
             return Result.failure(Exception("Failed to fetch"))
         }catch (e: Exception){
+
             return Result.failure(Exception("Network issue"))
         }
     }
@@ -104,10 +106,13 @@ class RealEstateDataSourceImp @Inject constructor(
        try{
            val res = apiService.getUserUploads()
            if(res.isSuccessful){
+               Log.d("ya omar beh ",res.body().toString())
              return Result.success(res.body()!!)
            }
+           Log.d("ya omar beh2 ",res.body().toString())
            return Result.failure(Exception("Failed to fetch"))
        }catch (e : Exception){
+           Log.d("ya omar beh ",e.toString())
            return Result.failure(Exception("Network issue"))
        }
     }

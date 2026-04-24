@@ -19,4 +19,5 @@ object ApiConstants {
     const val getUserRequests = "/user/requests"
     const val searchByTitle = "/real-estate/filter"
     const val deleteUser ="/user"
+    const val getUsersDataByIds="/user/uploaders-info"
 }

@@ -21,12 +21,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.smsrly.R
+import com.example.smsrly.domain.models.UserInfo
 import com.example.smsrly.presentation.ui.screens.components.UserImage
 import com.example.smsrly.presentation.ui.theme.Primary
 
 @Composable
-fun ConversationHeader(modifier: Modifier = Modifier) {
+fun ConversationHeader(navController: NavController,receiverData: UserInfo) {
     Box(
         modifier = Modifier
             .background(color = Primary)
@@ -38,7 +40,9 @@ fun ConversationHeader(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(top = 35.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton({}) {
+            IconButton({
+                navController.popBackStack()
+            }) {
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = "",
@@ -46,9 +50,9 @@ fun ConversationHeader(modifier: Modifier = Modifier) {
                 )
             }
             Spacer(Modifier.width(10.dp))
-            UserImage("https://media.gettyimages.com/id/2213939595/photo/al-nassr-v-al-ittihad-saudi-pro-league.jpg?s=1024x1024&w=gi&k=20&c=JEhY9mDwysyyY8QP0n1r32GpvYj6Mk9fDrLgTYFdfZ0=")
+            UserImage(receiverData.userImage)
             Spacer(Modifier.width(10.dp))
-            Text("Cristiano Ronaldo", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 18.sp)
+            Text(receiverData.userName, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 18.sp)
 
         }
     }

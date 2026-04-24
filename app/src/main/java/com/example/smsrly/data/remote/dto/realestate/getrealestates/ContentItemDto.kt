@@ -1,5 +1,7 @@
 package com.example.smsrly.data.remote.dto.realestate.getrealestates
 
+import com.example.smsrly.data.remote.dto.user.UserInfoDto
+
 data class ContentItemDto(
     val floor_number :Int,
     val bathroom_number:Int,
@@ -8,7 +10,6 @@ data class ContentItemDto(
     val images:List<String>,
     val is_save: Boolean,
     val id:Int,
-    val userId:Int,
     val title:String,
     val description:String,
     val area: Double,
@@ -17,6 +18,6 @@ data class ContentItemDto(
     val longitude:Double,
     val city:String,
     val country:String,
-    val userInfo:UserInfoDto,
+    val uploaderInfo: UserInfoDto,
     val is_requested:Boolean
 )

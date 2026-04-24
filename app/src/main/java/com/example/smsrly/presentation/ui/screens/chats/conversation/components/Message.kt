@@ -1,7 +1,9 @@
 package com.example.smsrly.presentation.ui.screens.chats.conversation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,20 +21,20 @@ import androidx.compose.ui.unit.sp
 import com.example.smsrly.presentation.ui.theme.Primary
 
 @Composable
-fun Message(color: Color) {
-    Box(
-        modifier = Modifier
+fun Message(color: Color, message: String, horizontalAr: Arrangement.Horizontal) {
+    Row(
+        horizontalArrangement = horizontalAr,
+        modifier = Modifier.fillMaxWidth(),
 
-            .clip(RoundedCornerShape(12.dp))
-            .background(color = color)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-
-
-    ) {
+        ) {
         Box(
-            modifier = Modifier.fillMaxWidth()
-        ){
-            Text("fdshoifhdsoifhdsohfoidshfiodshfdsohfdsiohfdsoidkfghgsjkdhgjkds n fdshoifhdsoifhdsohfoidshfiodshfdsohfdsiohfdsoig", fontSize = 18.sp, color = Color.Black)
+            modifier = Modifier
+                .widthIn(max = 250.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = color)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+        ) {
+            Text(message, fontSize = 18.sp, color = Color.Black)
 
         }
     }

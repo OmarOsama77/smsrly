@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.smsrly.R
+import com.example.smsrly.domain.models.UserInfo
 import com.example.smsrly.presentation.ui.screens.chats.ChatsRoute
 import com.example.smsrly.presentation.ui.screens.chats.conversation.ConversationRoute
 import com.example.smsrly.presentation.ui.screens.components.UserImage
@@ -33,8 +34,8 @@ import com.example.smsrly.presentation.ui.screens.components.UserImage
 @Composable
 fun ShowDetailsCard(
     navController: NavController,
-    userImage: String?, userName: String, desc: String,
-    ownerId:Int
+    uploaderInfo : UserInfo,
+    desc : String
 ) {
     Box(
         modifier = Modifier
@@ -56,9 +57,9 @@ fun ShowDetailsCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    UserImage(userImage)
+                    UserImage(uploaderInfo.userImage)
                     Spacer(Modifier.width(5.dp))
-                    Text(userName)
+                    Text(uploaderInfo.userName)
 
 
                 }
@@ -66,7 +67,8 @@ fun ShowDetailsCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton({
-                        navController.navigate(ConversationRoute(receiverId =ownerId))
+
+                        navController.navigate(ConversationRoute(uploaderInfo))
                     }, modifier = Modifier.height(30.dp).width(40.dp) ) {
                         Icon(
                             painter = painterResource(R.drawable.chatunselected),

@@ -38,6 +38,7 @@ fun MainScreen(navController: NavController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Color.White,
+        contentWindowInsets = WindowInsets(0.dp),
         bottomBar = {
             Row(
                 modifier = Modifier

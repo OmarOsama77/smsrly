@@ -1,6 +1,6 @@
 package com.example.smsrly.data.remote.dto.realestate.getuseruploads
 
-import com.example.smsrly.data.remote.dto.realestate.getrealestates.UserInfoDto
+import com.example.smsrly.data.remote.dto.user.UserInfoDto
 
 data class UserUploadedRealEstateDto(
     val floor_number:Int,

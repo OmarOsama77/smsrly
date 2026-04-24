@@ -14,23 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.smsrly.domain.models.UserInfo
 import com.example.smsrly.presentation.ui.screens.chats.conversation.ConversationRoute
 import com.example.smsrly.presentation.ui.screens.components.UserImage
 
 @Composable
-fun ChatCard(navController: NavController) {
+fun ChatCard(navController: NavController,userInfo: UserInfo,lastMessage :String) {
     Row(
         modifier = Modifier.fillMaxWidth().clickable{
-            navController.navigate(ConversationRoute)
+            navController.navigate(ConversationRoute(userInfo))
         },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        UserImage("https://media.gettyimages.com/id/2213939595/photo/al-nassr-v-al-ittihad-saudi-pro-league.jpg?s=1024x1024&w=gi&k=20&c=JEhY9mDwysyyY8QP0n1r32GpvYj6Mk9fDrLgTYFdfZ0=")
+        UserImage(userInfo.userImage)
         Spacer(modifier = Modifier.width(15.dp))
         Column() {
-            Text("Cristiano Ronaldo", fontWeight = FontWeight.Bold)
+            Text(userInfo.userName, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(10.dp))
-            Text("My last message is ")
+            Text(lastMessage)
         }
 
     }

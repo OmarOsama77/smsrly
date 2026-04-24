@@ -74,6 +74,7 @@ fun Home(navController: NavController) {
                 } else {
                     items(allRealEstate.value.size) { indx ->
                         val realEstate = allRealEstate.value.values.toList().get(indx)
+
                         Item(
                             realEstate,
                             {

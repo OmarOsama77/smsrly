@@ -22,6 +22,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.smsrly.domain.models.RealEstate
+import com.example.smsrly.domain.models.UserInfo
 import com.example.smsrly.presentation.ui.screens.myadds.components.RequestedUsers
 import com.example.smsrly.presentation.ui.screens.myadds.screens.uploaded.components.UploadedPriceSection
 import com.example.smsrly.presentation.ui.screens.showdetails.components.LocationDisplay
@@ -32,21 +33,37 @@ import com.example.smsrly.presentation.ui.screens.showdetails.components.ShowDet
 import com.example.smsrly.presentation.ui.screens.showdetails.viewmodel.ShowDetailsViewModel
 import com.example.smsrly.presentation.ui.screens.showdetails.viewmodel.state.RequestState
 import com.example.smsrly.utility.RealEstateNavType
+import com.example.smsrly.utility.UserInfoNavType
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
 @Serializable
-data class ShowDetailsRoute(val realEstate: RealEstate, val showRequestedUsers: Boolean)
+data class ShowDetailsRoute(
+    val realEstate: RealEstate,
+    val showRequestedUsers: Boolean,
+
+)
 
 fun NavGraphBuilder.ShowDetailsRoute(navController: NavController) {
-    composable<ShowDetailsRoute>(typeMap = mapOf(typeOf<RealEstate>() to RealEstateNavType)) { backStackEntry ->
+    composable<ShowDetailsRoute>(
+        typeMap = mapOf(
+            typeOf<RealEstate>() to RealEstateNavType,
+            typeOf<UserInfo>() to UserInfoNavType
+        )
+    ) { backStackEntry ->
         val route = backStackEntry.toRoute<ShowDetailsRoute>()
         ShowDetails(navController, route.realEstate, route.showRequestedUsers)
     }
 }
 
 @Composable
-fun ShowDetails(navController: NavController, realEstate: RealEstate, showRequestedUsers: Boolean) {
+fun ShowDetails(
+    navController: NavController,
+    realEstate: RealEstate,
+    showRequestedUsers: Boolean,
+) {
+
+
     val viewModel: ShowDetailsViewModel = hiltViewModel()
     val requestState = viewModel.state.collectAsState()
     val currentUser = viewModel.currentUser.collectAsState()
@@ -95,20 +112,23 @@ fun ShowDetails(navController: NavController, realEstate: RealEstate, showReques
                 Spacer(Modifier.height(30.dp))
                 ShowDetailsCard(
                     navController,
-                    if (showRequestedUsers) currentUser.value?.imageUrl else realEstate.userInfo?.userImage,
-                    if (showRequestedUsers) "${currentUser.value?.firstName} ${currentUser.value?.lastName}" else realEstate.userInfo!!.userName,
-                    realEstate.desc,
-                    realEstate.userId!!
+                    if (showRequestedUsers) UserInfo(
+                        currentUser.value!!.userId!!,
+                        currentUser.value!!.phoneNumber,
+                        currentUser.value!!.imageUrl,
+                            currentUser.value!!.firstName + currentUser.value!!.lastName
+                    ) else realEstate.uploaderInfo!!,
+                    realEstate.desc
                 )
 
                 Spacer(Modifier.height(14.dp))
                 LocationDisplay(realEstate.longitude, realEstate.latitude)
                 Spacer(Modifier.height(14.dp))
-                if(showRequestedUsers){
-                    UploadedPriceSection(realEstate.price,{
+                if (showRequestedUsers) {
+                    UploadedPriceSection(realEstate.price, {
 
                     })
-                }else{
+                } else {
                     PriceSection(realEstate.id!!, realEstate.price, viewModel)
                 }
             }

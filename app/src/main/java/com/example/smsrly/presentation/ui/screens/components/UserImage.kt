@@ -27,11 +27,12 @@ fun UserImage(imageUrl: String?) {
             .clip(RoundedCornerShape(40.dp))
 
     ) {
+        Log.d("ya omar test",imageUrl.toString())
         if (imageUrl == null) {
             Image(
                 painter = painterResource(R.drawable.anonymous),
                 contentDescription = null,
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.size(50.dp),
             )
         } else {
             AsyncImage(

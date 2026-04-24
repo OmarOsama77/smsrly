@@ -18,6 +18,8 @@ import com.example.smsrly.data.remote.dto.signup.userimage.UserImageSuccessDto
 import com.example.smsrly.data.remote.dto.tokens.RefreshTokenDtoSuccess
 import com.example.smsrly.data.remote.dto.user.DeleteUserDto
 import com.example.smsrly.data.remote.dto.user.GetUserResponse
+import com.example.smsrly.data.remote.dto.user.GetUsersDataDtoRequest
+import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -122,6 +124,11 @@ interface ApiService {
     ):Response<GetRealEstatesDto>
     @DELETE(ApiConstants.deleteUser)
     suspend fun deleteUser(): Response<DeleteUserDto>
+
+    @POST(ApiConstants.getUsersDataByIds)
+    suspend fun getUsersDataByIds(
+        @Body request : GetUsersDataDtoRequest
+    ):Response<Map<String,UserInfoDto>>
 }
 
 

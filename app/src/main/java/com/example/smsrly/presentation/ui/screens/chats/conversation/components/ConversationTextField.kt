@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ConversationTextField(txt : String, onValueChange:(String)->Unit) {
     TextField(
-        modifier =  Modifier.fillMaxWidth(0.8f),
+        modifier =  Modifier.fillMaxWidth(0.82f),
         placeholder = { Text("Write a message") },
         value = txt,
         onValueChange = {

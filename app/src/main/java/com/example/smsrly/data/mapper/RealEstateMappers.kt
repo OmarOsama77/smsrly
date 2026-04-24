@@ -3,7 +3,7 @@ package com.example.smsrly.data.mapper
 import com.example.smsrly.data.remote.apiservice.ApiConstants
 import com.example.smsrly.data.remote.dto.realestate.getrealestates.ContentItemDto
 import com.example.smsrly.data.remote.dto.realestate.getrealestates.GetRealEstatesDto
-import com.example.smsrly.data.remote.dto.realestate.getrealestates.UserInfoDto
+import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import com.example.smsrly.data.remote.dto.realestate.getuseruploads.GetUserUploadsDto
 import com.example.smsrly.data.remote.dto.realestate.getuseruploads.UserUploadedRealEstateDto
 import com.example.smsrly.data.remote.dto.realestate.uploadRealState.UploadRealStateDto
@@ -31,8 +31,11 @@ fun RealEstate.toUploadDto(): UploadRealStateDto {
 
 fun UserInfoDto.toDomain(): UserInfo{
 return UserInfo(
+    userId = this.user_id,
     userNumber = this.user_number,
-    userImage = "${ApiConstants.base_url.dropLast(1)}${this.user_image}",
+    userImage =this.user_image?.let {
+        "${ApiConstants.base_url.dropLast(1)}$it"
+    },
     userName = this.username
 )
 }
@@ -53,9 +56,8 @@ fun ContentItemDto.toDomain(): RealEstate {
         images = this.images.map {image->
             "${ApiConstants.base_url.dropLast(1)}${image}"
         },
-        userInfo = this.userInfo.toDomain(),
+        uploaderInfo = this.uploaderInfo.toDomain(),
         id = this.id,
-        userId = this.userId,
         isSaved = this.is_save,
         isRequested = this.is_requested,
         requestedUsers = null
@@ -92,8 +94,8 @@ fun UserUploadedRealEstateDto.toDomain(): RealEstate{
             "${ApiConstants.base_url.dropLast(1)}${it}"
         },
         rooms = this.room_number,
-        userInfo = null,
-        userId = null,
+        uploaderInfo = null,
+
         requestedUsers = this.requests.map {
             it.toDomain()
         }
