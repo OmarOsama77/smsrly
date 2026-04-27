@@ -1,7 +1,7 @@
 package com.example.smsrly.data.mapper
 
 import com.example.smsrly.data.remote.apiservice.ApiConstants
-import com.example.smsrly.data.remote.dto.realestate.getrealestates.ContentItemDto
+import com.example.smsrly.data.remote.dto.realestate.getrealestates.RealEstateDto
 import com.example.smsrly.data.remote.dto.realestate.getrealestates.GetRealEstatesDto
 import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import com.example.smsrly.data.remote.dto.realestate.getuseruploads.GetUserUploadsDto
@@ -40,7 +40,7 @@ return UserInfo(
 )
 }
 
-fun ContentItemDto.toDomain(): RealEstate {
+fun RealEstateDto.toDomain(): RealEstate {
     return RealEstate(
         title = this.title,
         desc = this.description,

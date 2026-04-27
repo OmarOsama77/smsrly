@@ -1,8 +1,12 @@
 package com.example.smsrly.data.repository
 
+import android.util.Log
+import com.example.smsrly.data.local.datasource.realestatelocaldatasource.IRealEstateLocalDataSource
+import com.example.smsrly.data.local.db.entities.RealEstateEntity
+import com.example.smsrly.data.mapper.toDB
 import com.example.smsrly.data.mapper.toDomain
 import com.example.smsrly.data.mapper.toUploadDto
-import com.example.smsrly.data.remote.datasource.realestatedatasource.IRealEstateDataSource
+import com.example.smsrly.data.remote.datasource.realestateremotedatasource.IRealEstateRemoteDataSource
 import com.example.smsrly.domain.models.RealEstate
 import com.example.smsrly.domain.repository.IRealEstateRepo
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +18,8 @@ import javax.inject.Singleton
 
 @Singleton
 class RealStateRepo @Inject constructor(
-    private val realEstateDataSource: IRealEstateDataSource
+    private val realEstateDataSource: IRealEstateRemoteDataSource,
+    private val realEstateLocalDataSource: IRealEstateLocalDataSource
 ) : IRealEstateRepo {
 
     private val _allRealEstates = MutableStateFlow<Map<Int, RealEstate>>(emptyMap())
@@ -46,6 +51,11 @@ class RealStateRepo @Inject constructor(
     override suspend fun getAllRealEstates(): Result<String> {
         val res = realEstateDataSource.getAllRealEstates()
         if (res.isSuccess) {
+           val dtoList = res.getOrNull()?.content
+
+            addRealEstatesToDB(dtoList!!.map {
+                it.toDB()
+            })
             val body = res.getOrNull()!!.toDomain()
             _allRealEstates.value = body.associateBy { it.id!! }
             return Result.success("Success")
@@ -53,6 +63,9 @@ class RealStateRepo @Inject constructor(
         return Result.failure(res.exceptionOrNull()!!)
     }
 
+    suspend fun addRealEstatesToDB(realEstates:List<RealEstateEntity>) {
+        realEstateLocalDataSource.addRealEstates(realEstates)
+    }
     override suspend fun getNeatestRealEstates(): Result<String> {
         val res = realEstateDataSource.getNearestRealEstates()
         if (res.isSuccess) {
@@ -152,6 +165,8 @@ class RealStateRepo @Inject constructor(
         }
         return Result.failure(res.exceptionOrNull()!!)
     }
+
+
 
 
     override suspend fun getUserUploads(): Result<List<RealEstate>> {

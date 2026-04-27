@@ -1,4 +1,4 @@
-package com.example.smsrly.data.remote.datasource.realestatedatasource
+package com.example.smsrly.data.remote.datasource.realestateremotedatasource
 
 import com.example.smsrly.data.remote.dto.realestate.getrealestates.GetRealEstatesDto
 import com.example.smsrly.data.remote.dto.realestate.getuseruploads.GetUserUploadsDto
@@ -6,7 +6,7 @@ import com.example.smsrly.data.remote.dto.realestate.savearealestate.SaveARealEs
 import com.example.smsrly.data.remote.dto.realestate.sendRequest.SuccessfulRequestDto
 import com.example.smsrly.data.remote.dto.realestate.uploadRealState.UploadRealStateDto
 
-interface IRealEstateDataSource{
+interface IRealEstateRemoteDataSource{
     suspend fun uploadARealState(realStateDto: UploadRealStateDto):Result<Int>
     suspend fun uploadRealEstateImage(image: String,id:Int) :Result<String>
     suspend fun getAllRealEstates():Result<GetRealEstatesDto>

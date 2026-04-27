@@ -2,7 +2,7 @@ package com.example.smsrly.data.remote.dto.realestate.getrealestates
 
 import com.example.smsrly.data.remote.dto.user.UserInfoDto
 
-data class ContentItemDto(
+data class RealEstateDto(
     val floor_number :Int,
     val bathroom_number:Int,
     val room_number:Int,

@@ -1,4 +1,4 @@
-package com.example.smsrly.data.local
+package com.example.smsrly.data.local.cache
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences

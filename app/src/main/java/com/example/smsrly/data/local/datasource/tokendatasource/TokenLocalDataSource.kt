@@ -1,6 +1,6 @@
 package com.example.smsrly.data.local.datasource.tokendatasource
 
-import com.example.smsrly.data.local.EncryptedSharedPref
+import com.example.smsrly.data.local.cache.EncryptedSharedPref
 import javax.inject.Inject
 import javax.inject.Singleton
 

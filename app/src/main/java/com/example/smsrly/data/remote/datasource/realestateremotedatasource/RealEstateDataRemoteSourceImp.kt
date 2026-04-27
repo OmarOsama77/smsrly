@@ -1,4 +1,4 @@
-package com.example.smsrly.data.remote.datasource.realestatedatasource
+package com.example.smsrly.data.remote.datasource.realestateremotedatasource
 
 import android.util.Log
 import androidx.core.net.toUri
@@ -18,11 +18,11 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import javax.inject.Inject
 
-class RealEstateDataSourceImp @Inject constructor(
+class RealEstateDataRemoteSourceImp @Inject constructor(
     private val apiService: ApiService,
     private val moshi: Moshi,
     private val imageUtils: ImageUtils
-) : IRealEstateDataSource {
+) : IRealEstateRemoteDataSource {
     override suspend fun uploadARealState(realStateDto: UploadRealStateDto): Result<Int> {
         try {
             val response = apiService.uploadRealState(realStateDto)

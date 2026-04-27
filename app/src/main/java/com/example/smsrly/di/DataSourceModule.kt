@@ -1,13 +1,15 @@
 package com.example.smsrly.di
 
+import com.example.smsrly.data.local.datasource.realestatelocaldatasource.IRealEstateLocalDataSource
+import com.example.smsrly.data.local.datasource.realestatelocaldatasource.RealEstateLocalDataSource
 import com.example.smsrly.data.local.datasource.tokendatasource.ITokenLocalDataSource
 import com.example.smsrly.data.local.datasource.tokendatasource.TokenLocalDataSource
 import com.example.smsrly.data.remote.datasource.authdatasource.AuthDataSourceImp
 import com.example.smsrly.data.remote.datasource.authdatasource.IAuthDataSource
 import com.example.smsrly.data.remote.datasource.firebasedatasource.FirebaseDataSource
 import com.example.smsrly.data.remote.datasource.firebasedatasource.IFirebaseDataSource
-import com.example.smsrly.data.remote.datasource.realestatedatasource.IRealEstateDataSource
-import com.example.smsrly.data.remote.datasource.realestatedatasource.RealEstateDataSourceImp
+import com.example.smsrly.data.remote.datasource.realestateremotedatasource.IRealEstateRemoteDataSource
+import com.example.smsrly.data.remote.datasource.realestateremotedatasource.RealEstateDataRemoteSourceImp
 import com.example.smsrly.data.remote.datasource.userdatasource.IUserDataSource
 import com.example.smsrly.data.remote.datasource.userdatasource.UserDataSource
 import dagger.Binds
@@ -32,7 +34,7 @@ abstract class DataSourceModule {
 
     @Binds
     @Singleton
-    abstract fun bindRealEstateDataSource(realEstateDataSourceImp: RealEstateDataSourceImp) : IRealEstateDataSource
+    abstract fun bindRealEstateDataSource(realEstateDataSourceImp: RealEstateDataRemoteSourceImp) : IRealEstateRemoteDataSource
 
 
     @Binds
@@ -42,5 +44,8 @@ abstract class DataSourceModule {
     @Binds
     @Singleton
     abstract fun bindFirebaseDataSource(firebaseDataSource: FirebaseDataSource): IFirebaseDataSource
+    @Binds
+    @Singleton
+    abstract fun bindRealEstateLocalDataSource(realEstateLocalDataSource: RealEstateLocalDataSource): IRealEstateLocalDataSource
 
 }

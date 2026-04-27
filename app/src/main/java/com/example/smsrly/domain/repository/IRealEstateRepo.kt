@@ -1,5 +1,6 @@
 package com.example.smsrly.domain.repository
 
+import com.example.smsrly.data.local.db.entities.RealEstateEntity
 import com.example.smsrly.data.remote.dto.realestate.getuseruploads.GetUserUploadsDto
 import com.example.smsrly.domain.models.RealEstate
 import kotlinx.coroutines.flow.Flow
@@ -24,4 +25,5 @@ interface IRealEstateRepo{
       fun getUserRequests():Flow<List<RealEstate>>
     fun resetData()
     suspend fun searchByTitle(title: String):Result<List<RealEstate>>
+//    suspend fun addRealEstatesToDB(realEstates:List<RealEstateEntity>)
 }
