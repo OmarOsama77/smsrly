@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smsrly.domain.models.RealEstate
+import com.example.smsrly.domain.observer.IConnectivityObserver
+import com.example.smsrly.domain.usecase.networkobserverusecases.NetworkObserverUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.UploadRealStateUseCase
 import com.example.smsrly.presentation.ui.screens.sell.viewmodel.events.SellEvents
 import com.example.smsrly.presentation.ui.screens.sell.viewmodel.states.SellState
@@ -20,10 +22,14 @@ import javax.inject.Inject
 @HiltViewModel
 class SellViewModel @Inject constructor(
     private val uploadRealStateUseCase: UploadRealStateUseCase,
+    private val networkStatusUseCase: NetworkObserverUseCase
 ) :
     ViewModel() {
     private val _selectedImages = MutableStateFlow<List<Uri>>(emptyList())
     val selectedImages: StateFlow<List<Uri>> = _selectedImages
+
+    private val _networkStatus = MutableStateFlow(IConnectivityObserver.Status.Available)
+    val networkStatus: StateFlow<IConnectivityObserver.Status> = _networkStatus
 
 
     fun addImages(uris: List<Uri>) {
@@ -31,6 +37,18 @@ class SellViewModel @Inject constructor(
         _selectedImages.value = _selectedImages.value + uris
     }
 
+    fun getNetworkFlow() {
+        viewModelScope.launch {
+            networkStatusUseCase.invoke().collect {
+                Log.d("i think im collecting ", it.toString())
+                _networkStatus.value = it
+            }
+        }
+    }
+
+    init {
+        getNetworkFlow()
+    }
 
     private val _selectedLocation = MutableStateFlow<Map<String, Any>?>(null)
 
@@ -49,7 +67,7 @@ class SellViewModel @Inject constructor(
     fun reset() {
         _selectedImages.value = emptyList()
         _selectedLocation.value = null
-        _state.value= SellState.Idle
+        _state.value = SellState.Idle
     }
 
 
@@ -79,20 +97,20 @@ class SellViewModel @Inject constructor(
                     _selectedLocation.value?.get("city") as String,
                     _selectedLocation.value?.get("country") as String,
                     _selectedLocation.value?.get("latitude") as Double,
-                     null,
+                    null,
                     _selectedLocation.value?.get("longitude") as Double,
                     rooms.toInt(),
                     _selectedImages.value.map {
                         it.toString()
                     },
                     null,
-                            null,
+                    null,
                     null,
                     null
                 )
                 val res = uploadRealStateUseCase.uploadRealState(realState)
                 if (res.isSuccess) {
-                   _events.emit(SellEvents.ShowToast(res.getOrNull()!!))
+                    _events.emit(SellEvents.ShowToast(res.getOrNull()!!))
                     _state.value = SellState.Success
                 } else {
                     _events.emit(SellEvents.ShowToast(res.exceptionOrNull()?.message!!))
@@ -105,8 +123,6 @@ class SellViewModel @Inject constructor(
             }
         }
     }
-
-
 
 
 }

@@ -1,4 +1,4 @@
-package com.example.smsrly.data.local.datasource.tokendatasource
+package com.example.smsrly.data.cache.datasource.tokendatasource
 
 import com.example.smsrly.data.cache.EncryptedSharedPref
 import javax.inject.Inject

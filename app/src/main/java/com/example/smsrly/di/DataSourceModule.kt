@@ -2,8 +2,8 @@ package com.example.smsrly.di
 
 import com.example.smsrly.data.local.datasource.realestatelocaldatasource.IRealEstateLocalDataSource
 import com.example.smsrly.data.local.datasource.realestatelocaldatasource.RealEstateLocalDataSource
-import com.example.smsrly.data.local.datasource.tokendatasource.ITokenLocalDataSource
-import com.example.smsrly.data.local.datasource.tokendatasource.TokenLocalDataSource
+import com.example.smsrly.data.cache.datasource.tokendatasource.ITokenLocalDataSource
+import com.example.smsrly.data.cache.datasource.tokendatasource.TokenLocalDataSource
 import com.example.smsrly.data.remote.datasource.authdatasource.AuthDataSourceImp
 import com.example.smsrly.data.remote.datasource.authdatasource.IAuthDataSource
 import com.example.smsrly.data.remote.datasource.firebasedatasource.FirebaseDataSource

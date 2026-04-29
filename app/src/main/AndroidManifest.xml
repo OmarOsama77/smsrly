@@ -23,7 +23,7 @@
             android:name="MAPBOX_ACCESS_TOKEN"
             android:value="pk.eyJ1Ijoia2hhbGVkMTEzIiwiYSI6ImNtbGkwYzNsczBkZzQzZHNqMnJ5NWo3bHIifQ.A8kwDXVHQ1Uf1FlBs5UDDw" />
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Smsrly">

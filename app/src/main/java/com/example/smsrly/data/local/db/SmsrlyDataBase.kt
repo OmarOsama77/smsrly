@@ -9,7 +9,7 @@ import com.example.smsrly.data.local.db.entities.RealEstateEntity
 import android.content.Context
 import com.example.smsrly.data.local.db.converters.RealEstateConverter
 
-@Database(entities = [RealEstateEntity::class], version = 2, exportSchema = false)
+@Database(entities = [RealEstateEntity::class], version = 3, exportSchema = false)
 @TypeConverters(RealEstateConverter::class)
 abstract class SmsrlyDataBase : RoomDatabase() {
     abstract val smsrlyDataBaseDao: SmsrlyDataBaseDao

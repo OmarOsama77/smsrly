@@ -7,7 +7,7 @@ import javax.inject.Inject
 class NetworkObserverUseCase @Inject constructor(
     private val networkObserver: IConnectivityObserver
 ) {
-    fun collectTheFlow(): Flow<IConnectivityObserver.Status>{
+    fun invoke(): Flow<IConnectivityObserver.Status>{
         return networkObserver.observe()
     }
 }

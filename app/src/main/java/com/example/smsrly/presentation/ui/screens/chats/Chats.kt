@@ -21,10 +21,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.smsrly.domain.observer.IConnectivityObserver
 import com.example.smsrly.presentation.ui.screens.chats.components.ChatCard
 import com.example.smsrly.presentation.ui.screens.chats.viewmodel.ChatsViewModel
 import com.example.smsrly.presentation.ui.screens.chats.viewmodel.states.ChatsState
 import com.example.smsrly.presentation.ui.screens.components.UserImage
+import com.example.smsrly.presentation.ui.screens.nointernet.NoInternet
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.serialization.Serializable
 
@@ -37,54 +39,59 @@ fun Chats(navController: NavController) {
     val user = viewModel.user.collectAsState()
     val conversations = viewModel.conversations.collectAsState()
     val state = viewModel.state.collectAsState()
-    LazyColumn(
-        modifier = Modifier
-            .padding(top = 30.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        item {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text("Chats", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                UserImage(user.value?.imageUrl)
-            }
-        }
-
-
-        when (state.value) {
-            is ChatsState.Idle -> {
-                item { CircularProgressIndicator() }
-            }
-
-            is ChatsState.Loading -> {
-                item { CircularProgressIndicator() }
-            }
-
-            is ChatsState.Success -> {
-                items(conversations.value.size) { index ->
-
-                    ChatCard(
-                        navController,
-                        conversations.value[index].receiverInfo!!,
-                        conversations.value[index].lastMessage
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(top = 12.dp),
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
-                    )
+    val networkStatus = viewModel.networkStatus.collectAsState()
+    if (networkStatus.value == IConnectivityObserver.Status.UnAvailable) {
+        NoInternet()
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = 30.dp, start = 10.dp, end = 10.dp, bottom = 10.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            item {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("Chats", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                    UserImage(user.value?.imageUrl)
                 }
             }
 
-            is ChatsState.Failed -> {
-                item { CircularProgressIndicator() }
+
+            when (state.value) {
+                is ChatsState.Idle -> {
+                    item { CircularProgressIndicator() }
+                }
+
+                is ChatsState.Loading -> {
+                    item { CircularProgressIndicator() }
+                }
+
+                is ChatsState.Success -> {
+                    items(conversations.value.size) { index ->
+
+                        ChatCard(
+                            navController,
+                            conversations.value[index].receiverInfo!!,
+                            conversations.value[index].lastMessage
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(top = 12.dp),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                        )
+                    }
+                }
+
+                is ChatsState.Failed -> {
+                    item { CircularProgressIndicator() }
+                }
+
             }
 
         }
-
     }
 }

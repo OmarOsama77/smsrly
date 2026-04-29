@@ -27,7 +27,6 @@ fun RealEstateDto.toDB(): RealEstateEntity{
         uploaderInfo = this.uploaderInfo.toDB(),
         isRequested = this.is_requested,
         isSaved = this.is_save,
-
     )
 }
 
@@ -41,3 +40,34 @@ fun UserInfoDto.toDB(): UserInfoEntity{
         userName = this.username
     )
 }
+
+fun RealEstateEntity.toDomain(): RealEstate{
+    return RealEstate(
+        title = title,
+        desc = desc,
+        area = area,
+        floor = floor,
+        bathRoom = bathRoom,
+        price = price,
+        city = city,
+        country = country,
+        latitude = latitude,
+        id = id,
+        longitude = longitude,
+        rooms = rooms,
+        images = images,
+        uploaderInfo = uploaderInfo.toDomain(),
+        isRequested = isRequested,
+        isSaved = isSaved,
+        requestedUsers = emptyList()
+    )
+}
+fun UserInfoEntity.toDomain():UserInfo{
+    return UserInfo(
+        userId = userId,
+        userNumber = userNumber,
+        userImage = userImage,
+        userName = userName
+    )
+}
+

@@ -8,6 +8,7 @@ import com.example.smsrly.data.mapper.toDomain
 import com.example.smsrly.data.mapper.toUploadDto
 import com.example.smsrly.data.remote.datasource.realestateremotedatasource.IRealEstateRemoteDataSource
 import com.example.smsrly.domain.models.RealEstate
+import com.example.smsrly.domain.observer.IConnectivityObserver
 import com.example.smsrly.domain.repository.IRealEstateRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,8 @@ import javax.inject.Singleton
 @Singleton
 class RealStateRepo @Inject constructor(
     private val realEstateDataSource: IRealEstateRemoteDataSource,
-    private val realEstateLocalDataSource: IRealEstateLocalDataSource
+    private val realEstateLocalDataSource: IRealEstateLocalDataSource,
+    private val connectionState: IConnectivityObserver
 ) : IRealEstateRepo {
 
     private val _allRealEstates = MutableStateFlow<Map<Int, RealEstate>>(emptyMap())
@@ -49,9 +51,19 @@ class RealStateRepo @Inject constructor(
 
 
     override suspend fun getAllRealEstates(): Result<String> {
+        if (connectionState.isOnline()) {
+            Log.d("getting data ","online")
+            return getAllRealEstatesFromServer()
+        } else {
+            Log.d("getting data ","offline")
+            return getAllRealEstatesFromDB()
+        }
+    }
+
+    suspend fun getAllRealEstatesFromServer(): Result<String> {
         val res = realEstateDataSource.getAllRealEstates()
         if (res.isSuccess) {
-           val dtoList = res.getOrNull()?.content
+            val dtoList = res.getOrNull()?.content
 
             addRealEstatesToDB(dtoList!!.map {
                 it.toDB()
@@ -63,9 +75,21 @@ class RealStateRepo @Inject constructor(
         return Result.failure(res.exceptionOrNull()!!)
     }
 
-    suspend fun addRealEstatesToDB(realEstates:List<RealEstateEntity>) {
+    suspend fun getAllRealEstatesFromDB(): Result<String> {
+        val res = realEstateLocalDataSource.getRealEstates()
+        if (res.isSuccess) {
+            val data = res.getOrNull()
+            _allRealEstates.value =  data!!.map { it.toDomain() }.associateBy{ it.id!! }
+            return Result.success("Success")
+        }
+        Log.d("i failed ","i think")
+        return Result.failure(res.exceptionOrNull()!!)
+    }
+
+    suspend fun addRealEstatesToDB(realEstates: List<RealEstateEntity>) {
         realEstateLocalDataSource.addRealEstates(realEstates)
     }
+
     override suspend fun getNeatestRealEstates(): Result<String> {
         val res = realEstateDataSource.getNearestRealEstates()
         if (res.isSuccess) {
@@ -165,8 +189,6 @@ class RealStateRepo @Inject constructor(
         }
         return Result.failure(res.exceptionOrNull()!!)
     }
-
-
 
 
     override suspend fun getUserUploads(): Result<List<RealEstate>> {

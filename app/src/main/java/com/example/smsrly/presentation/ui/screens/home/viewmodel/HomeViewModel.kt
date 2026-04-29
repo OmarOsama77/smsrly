@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smsrly.domain.models.RealEstate
 import com.example.smsrly.domain.models.User
+import com.example.smsrly.domain.observer.IConnectivityObserver
+import com.example.smsrly.domain.usecase.networkobserverusecases.NetworkObserverUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.GetAllRealEstatesUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.GetNearestRealEstateUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.SaveARealEstateUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.UnSaveARealEstateUseCase
 import com.example.smsrly.domain.usecase.userusecase.GetUserDataUseCase
 import com.example.smsrly.domain.usecase.userusecase.GetUserFlowUseCase
+import com.example.smsrly.presentation.ui.screens.chats.viewmodel.states.ChatsState
 import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.AllRealEstatesState
 import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.NearestRealEstateState
 import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.UserState
@@ -29,10 +32,12 @@ class HomeViewModel @Inject constructor(
     private val getAllRealEstateUseCase: GetAllRealEstatesUseCase,
     private val getNearestRealEstateUseCase: GetNearestRealEstateUseCase,
     private val saveARealEstateUseCase: SaveARealEstateUseCase,
-    private val unSaveARealEstateUseCase: UnSaveARealEstateUseCase
+    private val unSaveARealEstateUseCase: UnSaveARealEstateUseCase,
+    private val networkStatusUseCase: NetworkObserverUseCase
 ) :
     ViewModel() {
-
+    private val _networkStatus = MutableStateFlow(IConnectivityObserver.Status.UnAvailable)
+    val networkStatus : StateFlow<IConnectivityObserver.Status> = _networkStatus
     private val _allRealEstatesState = MutableStateFlow<AllRealEstatesState>(AllRealEstatesState.Idle)
     val allRealEstatesState: StateFlow<AllRealEstatesState> = _allRealEstatesState
     private val _userState = MutableStateFlow<UserState>(UserState.Idle)
@@ -53,6 +58,7 @@ class HomeViewModel @Inject constructor(
 
 
     init {
+        getNetworkFlow()
         fetchUserData()
         fetchAllRealEstates()
         fetchNearestRealEstate()
@@ -78,6 +84,7 @@ class HomeViewModel @Inject constructor(
         _allRealEstatesState.value = AllRealEstatesState.Loading
         viewModelScope.launch {
             val res = getAllRealEstateUseCase.getAllRealEstates()
+            Log.d("The res is ",res.toString())
             if (res.isSuccess) {
                 _allRealEstatesState.value = AllRealEstatesState.Success
             } else {
@@ -124,6 +131,14 @@ class HomeViewModel @Inject constructor(
             if (res.isFailure) {
                 val message  = res.exceptionOrNull()?.message?:"Unknown error"
                 _errorEvent.emit(message)
+            }
+        }
+    }
+
+    fun getNetworkFlow(){
+        viewModelScope.launch {
+            networkStatusUseCase.invoke().collect {
+                _networkStatus.value = it
             }
         }
     }

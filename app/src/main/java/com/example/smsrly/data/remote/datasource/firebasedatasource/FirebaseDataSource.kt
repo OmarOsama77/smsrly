@@ -59,7 +59,8 @@ class FirebaseDataSource @Inject constructor(
 
             val conversationId =
                 "${Math.min(senderId, receiverId)}_${Math.max(senderId, receiverId)}"
-            db.reference.child("conversations").child(conversationId).addValueEventListener(
+            val ref = db.reference.child("conversations").child(conversationId)
+            val listener = ref.addValueEventListener(
                 object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val newList = mutableListOf<MessageDto>()
@@ -67,7 +68,6 @@ class FirebaseDataSource @Inject constructor(
                             val item = i.getValue(MessageDto()::class.java)
                             newList.add(item!!)
                         }
-                        Log.d("the new list ", newList.toString())
                         trySend(newList)
                     }
 
@@ -77,20 +77,22 @@ class FirebaseDataSource @Inject constructor(
 
                 }
             )
+            ref.addValueEventListener(listener)
             awaitClose {
-
+                ref.removeEventListener(listener)
             }
         }
     }
 
     override fun getConversations(userId: Int): Flow<Map<String, ConversationDto>> {
         return callbackFlow {
-            db.reference.child("users").child(userId.toString()).addValueEventListener(
+            val ref = db.reference.child("users").child(userId.toString())
+            val listener = ref.addValueEventListener(
                 object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val newMap = mutableMapOf<String, ConversationDto>()
                         for (i in snapshot.children) {
-                            if(i.key.toString()!="created at"){
+                            if (i.key.toString() != "created at") {
                                 val conversation = i.getValue(ConversationDto()::class.java)
                                 newMap.put(i.key.toString(), conversation!!)
                             }
@@ -104,8 +106,9 @@ class FirebaseDataSource @Inject constructor(
 
                 }
             )
+            ref.addValueEventListener(listener)
             awaitClose {
-
+                ref.removeEventListener(listener)
             }
         }
     }

@@ -22,5 +22,5 @@ data class RealEstateEntity(
     val uploaderInfo: UserInfoEntity,
     var isRequested :Boolean?,
     var isSaved : Boolean?,
-//    val requestedUsers : List<UserInfoEntity>
+    val isNearest : Boolean = false
 )

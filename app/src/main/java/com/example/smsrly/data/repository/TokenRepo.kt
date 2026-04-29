@@ -1,6 +1,6 @@
 package com.example.smsrly.data.repository
 
-import com.example.smsrly.data.local.datasource.tokendatasource.ITokenLocalDataSource
+import com.example.smsrly.data.cache.datasource.tokendatasource.ITokenLocalDataSource
 import com.example.smsrly.domain.repository.ITokenRepo
 import javax.inject.Inject
 import javax.inject.Singleton

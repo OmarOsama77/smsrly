@@ -83,7 +83,7 @@ class RealEstateDataRemoteSourceImp @Inject constructor(
 
             return Result.failure(Exception("Failed to fetch"))
         }catch (e: Exception){
-
+            Log.d("yaaa dddd",e.toString())
             return Result.failure(Exception("Network issue"))
         }
     }

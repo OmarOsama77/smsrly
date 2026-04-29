@@ -1,4 +1,4 @@
-package com.example.smsrly.data.local.datasource.tokendatasource
+package com.example.smsrly.data.cache.datasource.tokendatasource
 
 interface ITokenLocalDataSource{
     fun saveTokens(accessToken: String, refreshToken: String)
