@@ -1,16 +1,12 @@
 package com.example.smsrly.presentation.ui.screens.showdetails
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,7 +19,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.smsrly.domain.models.RealEstate
 import com.example.smsrly.domain.models.UserInfo
-import com.example.smsrly.presentation.ui.screens.myadds.components.RequestedUsers
 import com.example.smsrly.presentation.ui.screens.myadds.screens.uploaded.components.UploadedPriceSection
 import com.example.smsrly.presentation.ui.screens.showdetails.components.LocationDisplay
 import com.example.smsrly.presentation.ui.screens.showdetails.components.PriceSection
@@ -32,6 +27,7 @@ import com.example.smsrly.presentation.ui.screens.showdetails.components.RealSta
 import com.example.smsrly.presentation.ui.screens.showdetails.components.ShowDetailsCard
 import com.example.smsrly.presentation.ui.screens.showdetails.viewmodel.ShowDetailsViewModel
 import com.example.smsrly.presentation.ui.screens.showdetails.viewmodel.state.RequestState
+import com.example.smsrly.presentation.ui.screens.showdetails.viewmodel.state.ShowDetailsState
 import com.example.smsrly.utility.RealEstateNavType
 import com.example.smsrly.utility.UserInfoNavType
 import kotlinx.serialization.Serializable
@@ -39,10 +35,10 @@ import kotlin.reflect.typeOf
 
 @Serializable
 data class ShowDetailsRoute(
-    val realEstate: RealEstate,
+    val realEstateId: Int,
     val showRequestedUsers: Boolean,
 
-)
+    )
 
 fun NavGraphBuilder.ShowDetailsRoute(navController: NavController) {
     composable<ShowDetailsRoute>(
@@ -52,22 +48,25 @@ fun NavGraphBuilder.ShowDetailsRoute(navController: NavController) {
         )
     ) { backStackEntry ->
         val route = backStackEntry.toRoute<ShowDetailsRoute>()
-        ShowDetails(navController, route.realEstate, route.showRequestedUsers)
+        ShowDetails(navController, route.realEstateId, route.showRequestedUsers)
     }
 }
 
 @Composable
 fun ShowDetails(
     navController: NavController,
-    realEstate: RealEstate,
+    realEstateId: Int,
     showRequestedUsers: Boolean,
 ) {
 
-
     val viewModel: ShowDetailsViewModel = hiltViewModel()
     val requestState = viewModel.state.collectAsState()
-    val currentUser = viewModel.currentUser.collectAsState()
-
+    val currentUser = viewModel.user.collectAsState()
+    val realEstate = viewModel.currentRealEstate.collectAsState()
+    val realEstateState = viewModel.currentRealEstateState.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getRealEstateById(realEstateId)
+    }
     LaunchedEffect(requestState.value) {
         if (requestState.value is RequestState.Success) {
             Toast.makeText(
@@ -83,66 +82,80 @@ fun ShowDetails(
             ).show()
         }
     }
-    if (!showRequestedUsers) {
-        LaunchedEffect(Unit) {
-            viewModel.initializeRealEstate(realEstate.isRequested!!)
-        }
-    }
 
 
     LazyColumn {
 
+        when (realEstateState.value) {
+            is ShowDetailsState.Idle -> {}
+            is ShowDetailsState.Loading -> {}
+            is ShowDetailsState.Success -> {
+                item { RealStateImage(realEstate.value?.images!!) }
+                item {
 
-        item { RealStateImage(realEstate.images) }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp, start = 22.dp, end = 22.dp, bottom = 10.dp)
+                    ) {
+                        RealStateDetails(
+                            realEstate.value!!.title,
+                            realEstate.value!!.rooms,
+                            realEstate.value!!.floor,
+                            realEstate.value!!.bathRoom,
+                            realEstate.value!!.area
+                        )
 
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp, start = 22.dp, end = 22.dp, bottom = 10.dp)
-            ) {
-                RealStateDetails(
-                    realEstate.title,
-                    realEstate.rooms,
-                    realEstate.floor,
-                    realEstate.bathRoom,
-                    realEstate.area
-                )
+                        Spacer(Modifier.height(30.dp))
+                        ShowDetailsCard(
+                            navController,
+                            if (showRequestedUsers) UserInfo(
+                                currentUser.value!!.userId!!,
+                                currentUser.value!!.phoneNumber,
+                                currentUser.value!!.imageUrl,
+                                currentUser.value!!.firstName + currentUser.value!!.lastName
+                            ) else realEstate.value!!.uploaderInfo!!,
+                            realEstate.value!!.desc
+                        )
 
-                Spacer(Modifier.height(30.dp))
-                ShowDetailsCard(
-                    navController,
-                    if (showRequestedUsers) UserInfo(
-                        currentUser.value!!.userId!!,
-                        currentUser.value!!.phoneNumber,
-                        currentUser.value!!.imageUrl,
-                            currentUser.value!!.firstName + currentUser.value!!.lastName
-                    ) else realEstate.uploaderInfo!!,
-                    realEstate.desc
-                )
+                        Spacer(Modifier.height(14.dp))
+                        LocationDisplay(realEstate.value!!.longitude, realEstate.value!!.latitude)
+                        Spacer(Modifier.height(14.dp))
+                        if (showRequestedUsers) {
+                            UploadedPriceSection(realEstate.value!!.price, {
+                                //to delete a realEstate
+                            })
+                        } else {
+                            PriceSection(
+                                realEstate.value!!.isRequested!!,
+                                realEstate.value!!.price,
+                                {
+                                    if (realEstate.value!!.isRequested!!) {
+                                        //click to remove the request
+                                        viewModel.cancelRequest(realEstateId)
+                                    } else {
+                                        //click to send a request
+                                        viewModel.sendRequest(realEstateId)
 
-                Spacer(Modifier.height(14.dp))
-                LocationDisplay(realEstate.longitude, realEstate.latitude)
-                Spacer(Modifier.height(14.dp))
-                if (showRequestedUsers) {
-                    UploadedPriceSection(realEstate.price, {
+                                    }
+                                })
+                        }
+                        if (showRequestedUsers) {
 
-                    })
-                } else {
-                    PriceSection(realEstate.id!!, realEstate.price, viewModel)
+//            items(realEstate.value!!.requestedUsers!!.size) { index ->
+//                RequestedUsers(
+//                    realEstate.value!!.requestedUsers[index].userImage,
+//                    realEstate.value!!.requestedUsers[index].userName
+//                )
+                        }
+                    }
                 }
             }
-        }
-        if (showRequestedUsers) {
-            item { Spacer(modifier = Modifier.height(12.dp)) }
-            items(realEstate.requestedUsers!!.size) { index ->
-                RequestedUsers(
-                    realEstate.requestedUsers[index].userImage,
-                    realEstate.requestedUsers[index].userName
-                )
-            }
-        }
 
+            is ShowDetailsState.Failed -> {}
+        }
 
     }
+
+
 }

@@ -78,7 +78,7 @@ fun Search(navController: NavController) {
                                 viewModel.saveARealEstate(realEstate.id!!)
                             }
                         },{
-                            navController.navigate(ShowDetailsRoute(realEstate,false))
+                            navController.navigate(ShowDetailsRoute(realEstate.id!!,false))
                         })
                         Spacer(Modifier.height(10.dp))
                     }

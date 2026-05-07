@@ -21,9 +21,13 @@ import com.example.smsrly.presentation.ui.screens.myadds.screens.saved.viewmodel
 fun Saved(navController: NavController) {
     val viewModel: SavedViewModel = hiltViewModel()
     val state = viewModel.savedState.collectAsState()
-    val savedRealEstate = viewModel.savedEstates.collectAsState()
+    val savedRealEstate = viewModel.savedRealEstates.collectAsState()
 
-
+    LaunchedEffect(Unit) {
+        viewModel.errorEvent.collect {error->
+            Toast.makeText(navController.context, error, Toast.LENGTH_SHORT).show()
+        }
+    }
     LazyColumn(
         modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 15.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)

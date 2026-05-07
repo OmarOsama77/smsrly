@@ -41,7 +41,7 @@ fun CommonItem(navController: NavController, realEstate: RealEstate, viewModel: 
             .width(254.dp)
             .clip(RoundedCornerShape(30.dp))
             .clickable {
-                navController.navigate(ShowDetailsRoute(realEstate,false))
+                navController.navigate(ShowDetailsRoute(realEstate.id!!,false))
             }
     ) {
         AsyncImage(

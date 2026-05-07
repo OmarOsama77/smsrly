@@ -45,7 +45,7 @@ fun MyAddsItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .clickable() {
-                navController.navigate(ShowDetailsRoute(realEstate,false))
+                navController.navigate(ShowDetailsRoute(realEstate.id!!,false))
             }
     ) {
         AsyncImage(

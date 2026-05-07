@@ -20,7 +20,7 @@ import com.example.smsrly.presentation.ui.screens.myadds.screens.requested.viewm
 fun Requested(navController: NavController) {
     val viewModel : RequestedViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState()
-    val data = viewModel.requested.collectAsState()
+    val userRequests = viewModel.userRequests.collectAsState()
 
 
     LazyColumn(
@@ -32,16 +32,16 @@ fun Requested(navController: NavController) {
                 MyAddsItemShimmer()
             }
         }else if(state.value is RequestsState.Success){
-            if(data.value.isEmpty()){
+            if(userRequests.value.isEmpty()){
                 item{   EmptyData(
                     modifier = Modifier.fillParentMaxSize(),"No requested realestates"
                 )}
             }else{
-            items(data.value.size){index->
-                val realEstate = data.value[index]
-                MyAddsItem(navController,data.value[index],{
-                   if(data.value[index].isSaved!!){
-                       //click to unsave
+            items(userRequests.value.size){index->
+                val realEstate = userRequests.value[index]
+                MyAddsItem(navController,userRequests.value[index],{
+                   if(userRequests.value[index].isSaved!!){
+
                        viewModel.unSaveARealEstate(realEstate.id!!)
                    }else{
                        viewModel.saveARealEstate(realEstate.id!!)

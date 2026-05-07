@@ -2,11 +2,11 @@ package com.example.smsrly.presentation.ui.screens.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.smsrly.domain.models.User
 import com.example.smsrly.domain.usecase.realstateusecase.ResetRealEstatesUseCase
 import com.example.smsrly.domain.usecase.tokenusecases.DeleteTokensUseCase
 import com.example.smsrly.domain.usecase.userusecase.DeleteUserUseCase
 import com.example.smsrly.domain.usecase.userusecase.GetUserDataUseCase
-import com.example.smsrly.domain.usecase.userusecase.GetUserFlowUseCase
 import com.example.smsrly.domain.usecase.userusecase.LogoutUseCase
 import com.example.smsrly.presentation.ui.screens.settings.state.SettingsUserState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val getUserFlowUseCase: GetUserFlowUseCase,
+
     private val getUserDataUseCase: GetUserDataUseCase,
     private val deleteTokensUseCase: DeleteTokensUseCase,
     private val logoutUseCase: LogoutUseCase,
@@ -27,24 +27,24 @@ class SettingsViewModel @Inject constructor(
     private val deleteUserUseCase : DeleteUserUseCase
 
 ): ViewModel(){
-    val user  = getUserFlowUseCase.getUser()
+
+    private val _user = MutableStateFlow<User?>(null)
+    val user : StateFlow<User?> = _user
     private val _state = MutableStateFlow<SettingsUserState>(SettingsUserState.Idle)
     val state : StateFlow<SettingsUserState> = _state
 
     private val _errorEvent = MutableSharedFlow<String>()
     val errorEvent : SharedFlow<String> = _errorEvent
     init {
-        fetchUserData()
+        getUserData()
     }
-    fun fetchUserData(){
+    fun getUserData(){
         _state.value = SettingsUserState.Loading
         viewModelScope.launch {
-            getUserDataUseCase.fetchUserData()
-            if(user.value!=null){
-                _state.value = SettingsUserState.Success
-            }else{
-                _state.value = SettingsUserState.Failed
+            getUserDataUseCase().collect {user->
+                _user.value = user
             }
+
         }
     }
     fun logOut(){

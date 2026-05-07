@@ -12,14 +12,13 @@ import com.example.smsrly.domain.observer.IConnectivityObserver
 import com.example.smsrly.domain.repository.IRealEstateRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RealStateRepo @Inject constructor(
-    private val realEstateDataSource: IRealEstateRemoteDataSource,
+    private val realEstateRemoteDataSource: IRealEstateRemoteDataSource,
     private val realEstateLocalDataSource: IRealEstateLocalDataSource,
     private val connectionState: IConnectivityObserver
 ) : IRealEstateRepo {
@@ -29,7 +28,7 @@ class RealStateRepo @Inject constructor(
 
 
     override suspend fun uploadARealState(realState: RealEstate): Result<Int> {
-        return realEstateDataSource.uploadARealState(realState.toUploadDto())
+        return realEstateRemoteDataSource.uploadARealState(realState.toUploadDto())
     }
 
     override suspend fun uploadRealEstateImage(
@@ -38,7 +37,7 @@ class RealStateRepo @Inject constructor(
     ): Result<Int> {
         var sentImages = 0
         for (i in 0 until images.size) {
-            val res = realEstateDataSource.uploadRealEstateImage(images[i], id)
+            val res = realEstateRemoteDataSource.uploadRealEstateImage(images[i], id)
             if (res.isSuccess) {
                 sentImages++
             }
@@ -50,22 +49,17 @@ class RealStateRepo @Inject constructor(
     }
 
 
-    override suspend fun getAllRealEstates(): Result<String> {
-        if (connectionState.isOnline()) {
-            Log.d("getting data ","online")
-            return getAllRealEstatesFromServer()
-        } else {
-            Log.d("getting data ","offline")
-            return getAllRealEstatesFromDB()
-        }
+    override suspend fun getAllRealEstates(): Flow<List<RealEstate>> {
+        getAllRealEstatesFromServer()
+        return getAllRealEstatesFromDB()
     }
 
     suspend fun getAllRealEstatesFromServer(): Result<String> {
-        val res = realEstateDataSource.getAllRealEstates()
+        val res = realEstateRemoteDataSource.getAllRealEstates()
         if (res.isSuccess) {
-            val dtoList = res.getOrNull()?.content
-
-            addRealEstatesToDB(dtoList!!.map {
+            val dtoList = res.getOrNull()!!.content
+            //caching on fetching
+            addRealEstatesToDB(dtoList.map {
                 it.toDB()
             })
             val body = res.getOrNull()!!.toDomain()
@@ -75,104 +69,87 @@ class RealStateRepo @Inject constructor(
         return Result.failure(res.exceptionOrNull()!!)
     }
 
-    suspend fun getAllRealEstatesFromDB(): Result<String> {
-        val res = realEstateLocalDataSource.getRealEstates()
-        if (res.isSuccess) {
-            val data = res.getOrNull()
-            _allRealEstates.value =  data!!.map { it.toDomain() }.associateBy{ it.id!! }
-            return Result.success("Success")
+    fun getAllRealEstatesFromDB(): Flow<List<RealEstate>> {
+        return realEstateLocalDataSource.getRealEstates().map {
+            it.map {
+                it.toDomain()
+            }
         }
-        Log.d("i failed ","i think")
-        return Result.failure(res.exceptionOrNull()!!)
     }
 
     suspend fun addRealEstatesToDB(realEstates: List<RealEstateEntity>) {
         realEstateLocalDataSource.addRealEstates(realEstates)
     }
 
-    override suspend fun getNeatestRealEstates(): Result<String> {
-        val res = realEstateDataSource.getNearestRealEstates()
-        if (res.isSuccess) {
-            val body = res.getOrNull()!!.toDomain()
-            val oldMap = _allRealEstates.value
-            _allRealEstates.value = oldMap + body.associateBy { it.id!! }
-            _nearestRealEstates.value = body.associateBy { it.id!! }
-            return Result.success("Success")
+    override suspend fun getNeatestRealEstates(
+
+    ): Flow<List<RealEstate>> {
+        return realEstateLocalDataSource.getNearestRealEstates().map {
+            it.map {
+                it.toDomain()
+            }
         }
-        return Result.failure(res.exceptionOrNull()!!)
     }
 
-    override fun getNearestRealEstateObj(): StateFlow<Map<Int, RealEstate>> {
-        return _nearestRealEstates
-    }
 
     override suspend fun saveARealEstate(id: Int): Result<String> {
-        toggleSaved(id, true)
-        val res = realEstateDataSource.saveARealEstate(id)
-
+        //update local first
+        saveARealEstateInDb(id)
+        //update server
+        val res = realEstateRemoteDataSource.saveARealEstate(id)
         if (res.isSuccess) {
-            return Result.success(res.getOrNull()!!.message)
+            return Result.success(res.getOrNull()?.message ?: "saved")
+        } else {
+            unSaveARealEstateInDb(id)
+            return Result.failure(Exception(res.exceptionOrNull()?.message))
         }
-        toggleSaved(id, false)
-        return Result.failure(Exception(res.exceptionOrNull()!!.message))
+
+    }
+
+    suspend fun saveARealEstateInDb(id: Int) {
+        realEstateLocalDataSource.saveARealEstate(id)
+    }
+
+    suspend fun unSaveARealEstateInDb(id: Int) {
+        realEstateLocalDataSource.unSaveARealEstate(id)
     }
 
     override suspend fun unSaveARealEstate(id: Int): Result<String> {
-        toggleSaved(id, false)
-        val res = realEstateDataSource.unSaveARealEstate(id)
+        unSaveARealEstateInDb(id)
+        val res = realEstateRemoteDataSource.unSaveARealEstate(id)
         if (res.isSuccess) {
-            return Result.success("Success")
+            return Result.success(res.getOrNull()?.message ?: "unSaved")
+        } else {
+            saveARealEstateInDb(id)
+            return Result.failure(Exception(res.exceptionOrNull()?.message))
         }
-        toggleSaved(id, true)
-        return Result.failure(Exception(res.exceptionOrNull()!!.message))
+
     }
 
 
     override fun getUserSavedRealEstates(): Flow<List<RealEstate>> {
-        return _allRealEstates.map {
-            it.values.filter { it.isSaved!! }
-        }
-    }
-
-
-    override fun toggleSaved(id: Int, isSaved: Boolean) {
-        if (isSaved) {
-            //made it to be saved
-            val current = _allRealEstates.value.toMutableMap()
-            current[id] = current[id]!!.copy(isSaved = true)
-            _allRealEstates.value = current
-            if (_nearestRealEstates.value.contains(id)) {
-                val updated = _nearestRealEstates.value.toMutableMap()
-                updated[id] = updated[id]!!.copy(isSaved = true)
-                _nearestRealEstates.value = updated
-            }
-        } else {
-            //made it to be unsaved
-            val current = _allRealEstates.value.toMutableMap()
-            current[id] = current[id]!!.copy(isSaved = false)
-            _allRealEstates.value = current
-            if (_nearestRealEstates.value.contains(id)) {
-                val updated = _nearestRealEstates.value.toMutableMap()
-                updated[id] = updated[id]!!.copy(isSaved = false)
-                _nearestRealEstates.value = updated
+        return realEstateLocalDataSource.getUserSaved().map {
+            it.map {
+                it.toDomain()
             }
         }
     }
+
 
     override suspend fun cancelRequest(id: Int): Result<String> {
-        toggleRequested(id, false)
-        val res = realEstateDataSource.cancelRequest(id)
+       cancelRequestInDb(id)
+        val res = realEstateRemoteDataSource.cancelRequest(id)
         if (res.isSuccess) {
             return Result.success(res.getOrNull()!!.message)
         }
-        toggleRequested(id, true)
+
         return Result.failure(Exception(res.exceptionOrNull()!!.message))
     }
 
     override fun getUserRequests(): Flow<List<RealEstate>> {
-        return _allRealEstates.map {
-            it.values.filter {
-                it.isRequested!!
+        return realEstateLocalDataSource.getUserRequests().map {
+            it.map {
+                it.toDomain()
             }
         }
     }
@@ -183,16 +160,22 @@ class RealStateRepo @Inject constructor(
     }
 
     override suspend fun searchByTitle(title: String): Result<List<RealEstate>> {
-        val res = realEstateDataSource.searchByTitle(title)
+        val res = realEstateRemoteDataSource.searchByTitle(title)
         if (res.isSuccess) {
             return Result.success(res.getOrNull()!!.toDomain())
         }
         return Result.failure(res.exceptionOrNull()!!)
     }
 
+    override fun getRealEstateById(id: Int): Flow<RealEstate> {
+        return realEstateLocalDataSource.getRealEstateById(id).map {
+            it.toDomain()
+        }
+    }
+
 
     override suspend fun getUserUploads(): Result<List<RealEstate>> {
-        val res = realEstateDataSource.getUserUploads()
+        val res = realEstateRemoteDataSource.getUserUploads()
         if (res.isSuccess) {
             return Result.success(res.getOrNull()!!.toDomain())
         } else {
@@ -201,42 +184,26 @@ class RealStateRepo @Inject constructor(
     }
 
     override suspend fun sendRequest(id: Int): Result<String> {
-        toggleRequested(id, true)
-        val res = realEstateDataSource.sendRequest(id)
+
+        sendRequestInDb(id)
+        //update server
+        val res = realEstateRemoteDataSource.sendRequest(id)
         if (res.isSuccess) {
+            Log.d("requested ","i successs")
             return Result.success("Request sent")
         } else {
-            toggleRequested(id, false)
+            Log.d("requested ","i failed")
+            cancelRequestInDb(id)
             val message = res.exceptionOrNull()?.message ?: "Failed to send request"
             return Result.failure(Exception(message))
         }
     }
 
-    override fun toggleRequested(id: Int, isRequested: Boolean) {
-        if (isRequested) {
-            val allRealEstate = _allRealEstates.value.toMutableMap()
-            allRealEstate[id] = allRealEstate[id]!!.copy(isRequested = true)
-            _allRealEstates.value = allRealEstate
-            if (_nearestRealEstates.value.contains(id)) {
-                val updated = _nearestRealEstates.value.toMutableMap()
-                updated[id] = updated[id]!!.copy(isRequested = true)
-                _nearestRealEstates.value = updated
-            }
-        } else {
-            val allRealEstate = _allRealEstates.value.toMutableMap()
-            allRealEstate[id] = allRealEstate[id]!!.copy(isRequested = false)
-            _allRealEstates.value = allRealEstate
-            if (_nearestRealEstates.value.contains(id)) {
-                val updated = _nearestRealEstates.value.toMutableMap()
-                updated[id] = updated[id]!!.copy(isRequested = false)
-                _nearestRealEstates.value = updated
-            }
-        }
+    suspend fun sendRequestInDb(id:Int){
+        realEstateLocalDataSource.sendRequest(id)
     }
-
-    override fun getRealEstateObj(): StateFlow<Map<Int, RealEstate>> {
-        return _allRealEstates
+    suspend fun cancelRequestInDb(id:Int){
+        realEstateLocalDataSource.cancelRequest(id)
     }
-
 
 }

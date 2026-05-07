@@ -1,12 +1,14 @@
 package com.example.smsrly.data.mapper
 
 import com.example.smsrly.data.local.db.entities.RealEstateEntity
+import com.example.smsrly.data.local.db.entities.UserEntity
 import com.example.smsrly.data.local.db.entities.UserInfoEntity
 import com.example.smsrly.data.remote.apiservice.ApiConstants
 import com.example.smsrly.data.remote.dto.realestate.getrealestates.GetRealEstatesDto
 import com.example.smsrly.data.remote.dto.realestate.getrealestates.RealEstateDto
 import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import com.example.smsrly.domain.models.RealEstate
+import com.example.smsrly.domain.models.User
 import com.example.smsrly.domain.models.UserInfo
 
 fun RealEstateDto.toDB(): RealEstateEntity{
@@ -55,7 +57,9 @@ fun RealEstateEntity.toDomain(): RealEstate{
         id = id,
         longitude = longitude,
         rooms = rooms,
-        images = images,
+        images = images.map {
+            "${ApiConstants.base_url.dropLast(1)}$it"
+        },
         uploaderInfo = uploaderInfo.toDomain(),
         isRequested = isRequested,
         isSaved = isSaved,
@@ -70,4 +74,18 @@ fun UserInfoEntity.toDomain():UserInfo{
         userName = userName
     )
 }
+
+
+fun User.toDB(): UserEntity{
+    return UserEntity(
+        firstName = this.firstName,
+        lastName = this.lastName,
+        email = this.email,
+        latitude = this.latitude!!,
+        longitude = this.longitude!!,
+        phoneNumber = this.phoneNumber,
+        userId = this.userId!!
+    )
+}
+
 

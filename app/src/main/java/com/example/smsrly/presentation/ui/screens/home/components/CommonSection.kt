@@ -15,7 +15,7 @@ import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.NearestR
 @Composable
 fun CommonSection(navController: NavController, viewModel: HomeViewModel) {
     val nearestRealEstateState = viewModel.nearestRealEstateState.collectAsState()
-    val nearestRealEstate = viewModel.nearestRealEstate.collectAsState()
+    val nearestRealEstates = viewModel.nearestRealEstates.collectAsState()
     LazyRow(
         modifier = Modifier.wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -33,7 +33,7 @@ fun CommonSection(navController: NavController, viewModel: HomeViewModel) {
             }
 
             is NearestRealEstateState.Success -> {
-                if (nearestRealEstate.value.isEmpty()) {
+                if (nearestRealEstates.value.isEmpty()) {
                     item {
                         EmptyData(
                             modifier = Modifier.fillParentMaxSize(),
@@ -41,10 +41,10 @@ fun CommonSection(navController: NavController, viewModel: HomeViewModel) {
                         )
                     }
                 }
-                items(nearestRealEstate.value.size) { index ->
+                items(nearestRealEstates.value.size) { index ->
                     CommonItem(
                         navController,
-                        nearestRealEstate.value.values.toList().get(index),
+                        nearestRealEstates.value[index],
                         viewModel
                     )
                 }

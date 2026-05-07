@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "23959792529",
+    "firebase_url": "https://smsrly-967f6-default-rtdb.firebaseio.com",
+    "project_id": "smsrly-967f6",
+    "storage_bucket": "smsrly-967f6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23959792529:android:e798ed5c4a4ece3b054830",
+        "android_client_info": {
+          "package_name": "com.example.smsrly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH9WEXMaei2qGgtV4PGh5ZRUbUPl7Mn2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

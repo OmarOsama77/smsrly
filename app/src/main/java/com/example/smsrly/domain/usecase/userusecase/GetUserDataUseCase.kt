@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class GetUserDataUseCase @Inject constructor(private val userRepo: IUserRepo) {
 
-    suspend fun fetchUserData():Result<Unit>{
-       return userRepo.getUserData()
+    suspend operator fun invoke():Flow<User>{
+       return userRepo.getUser()
     }
 
 }

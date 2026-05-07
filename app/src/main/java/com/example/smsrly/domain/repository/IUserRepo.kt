@@ -7,8 +7,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface IUserRepo {
-    suspend fun getUserData():Result<Unit>
-    fun getUserFlow():StateFlow<User?>
+    suspend fun getUser():Flow<User>
+
+    suspend fun getUserFromServer(): Result<User>
+
+
     fun logout()
     suspend fun deleteUser():Result<String>
     suspend fun getUsersInfo(usersIds: List<String>):Result<Map<String,UserInfo>>

@@ -8,6 +8,7 @@ import com.example.smsrly.domain.usecase.realstateusecase.GetUserRequestsUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.SaveARealEstateUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.UnSaveARealEstateUseCase
 import com.example.smsrly.presentation.ui.screens.myadds.screens.requested.viewmodel.state.RequestsState
+import com.example.smsrly.presentation.ui.screens.showdetails.viewmodel.state.RequestState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,37 +25,34 @@ class RequestedViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<RequestsState>(RequestsState.Idle)
-    val state: StateFlow<RequestsState> = _state
+    val state : StateFlow<RequestsState> = _state
 
-    lateinit var requested: StateFlow<List<RealEstate>>
-    fun getUserRequests() {
+
+
+    init {
+        getUserRequest()
+    }
+    private val _userRequests = MutableStateFlow<List<RealEstate>>(emptyList())
+    val userRequests : StateFlow<List<RealEstate>> = _userRequests
+    fun getUserRequest(){
         _state.value = RequestsState.Loading
         viewModelScope.launch {
-            requested = getUserRequestsUseCase.getUserRequests()
-                .stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(5000),
-                    emptyList()
-                )
-            _state.value = RequestsState.Success
+            getUserRequestsUseCase.getUserRequests().collect {userRequests->
+                _userRequests.value = userRequests
+                _state.value = RequestsState.Success
+            }
         }
     }
-    init {
-        getUserRequests()
-    }
 
-    fun saveARealEstate(id:Int) {
+    fun saveARealEstate(id:Int){
         viewModelScope.launch {
-             saveARealEstateUseCase.saveARealEstate(id)
+            saveARealEstateUseCase.saveARealEstate(id)
         }
     }
-
-    fun unSaveARealEstate(id: Int) {
+    fun unSaveARealEstate(id:Int){
         viewModelScope.launch {
-             unSaveARealEstateUseCase.unSaveARealEstate(id)
-
+            unSaveARealEstateUseCase.unSaveARealEstate(id)
         }
     }
-
 
 }

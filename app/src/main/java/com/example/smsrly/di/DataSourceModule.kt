@@ -4,14 +4,16 @@ import com.example.smsrly.data.local.datasource.realestatelocaldatasource.IRealE
 import com.example.smsrly.data.local.datasource.realestatelocaldatasource.RealEstateLocalDataSource
 import com.example.smsrly.data.cache.datasource.tokendatasource.ITokenLocalDataSource
 import com.example.smsrly.data.cache.datasource.tokendatasource.TokenLocalDataSource
+import com.example.smsrly.data.local.datasource.userlocaldatasource.IUserLocalDataSource
+import com.example.smsrly.data.local.datasource.userlocaldatasource.UserLocalDataSource
 import com.example.smsrly.data.remote.datasource.authdatasource.AuthDataSourceImp
 import com.example.smsrly.data.remote.datasource.authdatasource.IAuthDataSource
 import com.example.smsrly.data.remote.datasource.firebasedatasource.FirebaseDataSource
 import com.example.smsrly.data.remote.datasource.firebasedatasource.IFirebaseDataSource
 import com.example.smsrly.data.remote.datasource.realestateremotedatasource.IRealEstateRemoteDataSource
 import com.example.smsrly.data.remote.datasource.realestateremotedatasource.RealEstateDataRemoteSourceImp
-import com.example.smsrly.data.remote.datasource.userdatasource.IUserDataSource
-import com.example.smsrly.data.remote.datasource.userdatasource.UserDataSource
+import com.example.smsrly.data.remote.datasource.userdatasource.IUserRemoteDataSource
+import com.example.smsrly.data.remote.datasource.userdatasource.UserRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -39,7 +41,7 @@ abstract class DataSourceModule {
 
     @Binds
     @Singleton
-    abstract fun bindUserDataSource(userDataSource: UserDataSource): IUserDataSource
+    abstract fun bindUserDataSource(userDataSource: UserRemoteDataSource): IUserRemoteDataSource
 
     @Binds
     @Singleton
@@ -48,4 +50,7 @@ abstract class DataSourceModule {
     @Singleton
     abstract fun bindRealEstateLocalDataSource(realEstateLocalDataSource: RealEstateLocalDataSource): IRealEstateLocalDataSource
 
+    @Binds
+    @Singleton
+    abstract fun bindUserLocalDataSource(userLocalDataSource:  UserLocalDataSource): IUserLocalDataSource
 }

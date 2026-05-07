@@ -1,5 +1,6 @@
 package com.example.smsrly.presentation.ui.screens.home
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -72,22 +73,20 @@ fun Home(navController: NavController) {
                 if (allRealEstate.value.isEmpty()) {
                     item { EmptyData(modifier = Modifier.height(200.dp), "No data found") }
                 } else {
-                    items(allRealEstate.value.size) { indx ->
-                        val realEstate = allRealEstate.value.values.toList().get(indx)
-
+                    items(allRealEstate.value.size) { index ->
                         Item(
-                            realEstate,
+                            allRealEstate.value[index],
                             {
-                                if (realEstate.isSaved!!) {
+                                if (allRealEstate.value[index].isSaved!!) {
                                     //press to cancel
-                                    viewModel.unSaveARealEstate(realEstate.id!!)
+                                    viewModel.unSaveARealEstate(allRealEstate.value[index].id!!)
                                 } else {
                                     //press to save
-                                    viewModel.saveARealEstate(realEstate.id!!)
+                                    viewModel.saveARealEstate(allRealEstate.value[index].id!!)
                                 }
                             },
                             {
-                                navController.navigate(ShowDetailsRoute(realEstate, false))
+                                navController.navigate(ShowDetailsRoute(allRealEstate.value[index].id!!, false))
                             }
                         )
                         Spacer(Modifier.height(10.dp))

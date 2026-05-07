@@ -4,15 +4,15 @@ import android.util.Log
 import com.example.smsrly.data.remote.apiservice.ApiConstants.base_url
 import com.example.smsrly.data.remote.apiservice.ApiService
 import com.example.smsrly.data.remote.dto.user.DeleteUserDto
-import com.example.smsrly.data.remote.dto.user.GetUserResponse
+import com.example.smsrly.data.remote.dto.user.UserDto
 import com.example.smsrly.data.remote.dto.user.GetUsersDataDtoRequest
 import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import javax.inject.Inject
 
-class UserDataSource @Inject constructor(
+class UserRemoteDataSource @Inject constructor(
     private val apiService : ApiService
-) : IUserDataSource {
-    override suspend fun getUserData(): Result<GetUserResponse> {
+) : IUserRemoteDataSource {
+    override suspend fun getUserData(): Result<UserDto> {
         try {
             val response = apiService.getUserData()
             if (response.isSuccessful) {

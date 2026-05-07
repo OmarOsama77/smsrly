@@ -119,8 +119,11 @@ class RealEstateDataRemoteSourceImp @Inject constructor(
 
     override suspend fun sendRequest(id: Int): Result<SuccessfulRequestDto> {
         try{
+            Log.d("ya basha ","im in to send request")
             val res = apiService.sendRequest(id)
             if(res.isSuccessful){
+
+                Log.d("ya basha ","im in to s request")
                 return Result.success(res.body()!!)
             }
             val errorJson = res.errorBody()?.string()
@@ -128,6 +131,8 @@ class RealEstateDataRemoteSourceImp @Inject constructor(
             errorJson?.let {
                 val adapter = moshi.adapter(FailedDto::class.java)
                 val errorResponse = adapter.fromJson(it)
+
+                Log.d("ya basha ","im fatiled ${errorResponse.toString()}")
                 return Result.failure(Exception(errorResponse?.error?.message?:"Failed"))
             }
             return Result.failure(Exception("Failed to send request"))

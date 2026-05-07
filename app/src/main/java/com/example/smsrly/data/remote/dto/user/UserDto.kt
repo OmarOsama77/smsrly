@@ -1,6 +1,6 @@
 package com.example.smsrly.data.remote.dto.user
 
-data class GetUserResponse (
+data class UserDto (
     val phone_number : String,
     var image_url : String?,
     val firstname : String,

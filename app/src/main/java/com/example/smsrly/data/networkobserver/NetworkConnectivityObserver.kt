@@ -20,10 +20,9 @@ class NetworkConnectivityObserver @Inject constructor(
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val _status = MutableStateFlow(IConnectivityObserver.Status.UnAvailable)
-    val status: StateFlow<IConnectivityObserver.Status> = _status
     override fun observe(): Flow<IConnectivityObserver.Status> {
         return callbackFlow {
-            Log.d("im running ","now")
+            Log.d("im running ", "now")
             val callBack = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
                     super.onAvailable(network)
@@ -47,7 +46,7 @@ class NetworkConnectivityObserver @Inject constructor(
     }
 
     override fun isOnline(): Boolean {
-        if(_status.value == IConnectivityObserver.Status.Available){
+        if (_status.value == IConnectivityObserver.Status.Available) {
             return true
         }
         return false

@@ -1,6 +1,5 @@
 package com.example.smsrly.presentation.ui.screens.auth.splash
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -17,7 +16,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.smsrly.R
 import com.example.smsrly.presentation.ui.screens.auth.login.LoginRoute
-import com.example.smsrly.presentation.ui.screens.auth.splash.viewmodel.SplashEvents
+import com.example.smsrly.presentation.ui.screens.auth.splash.viewmodel.states.SplashEvents
 import com.example.smsrly.presentation.ui.screens.auth.splash.viewmodel.SplashViewModel
 import com.example.smsrly.presentation.ui.screens.bottomnavbar.MainRoute
 import kotlinx.coroutines.delay

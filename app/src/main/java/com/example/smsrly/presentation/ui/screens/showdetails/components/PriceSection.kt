@@ -16,8 +16,8 @@ import com.example.smsrly.presentation.ui.theme.Primary
 import com.example.smsrly.utility.formatPrice
 
 @Composable
-fun PriceSection(id: Int, price: Double, viewModel: ShowDetailsViewModel) {
-   val isRequested = viewModel.isRequested.collectAsState()
+fun PriceSection(isRequested:Boolean, price: Double,onClick:()->Unit) {
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -26,14 +26,10 @@ fun PriceSection(id: Int, price: Double, viewModel: ShowDetailsViewModel) {
         Text("${formatPrice(price)} EGP", fontSize = 17.sp, fontWeight = FontWeight.Medium)
         CustomDetailsButton(
             {
-                if(isRequested.value){
-                    viewModel.cancelRequest(id)
-                }else{
-                    viewModel.sendRequest(id)
-                }
+                onClick()
             },
-            if (isRequested.value) "Delete request" else "Request",
-            if (isRequested.value) Color.Red else Primary
+            if (isRequested) "Delete request" else "Request",
+            if (isRequested) Color.Red else Primary
         )
     }
 }

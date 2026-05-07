@@ -9,6 +9,7 @@ import com.example.smsrly.presentation.ui.screens.myadds.screens.saved.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -17,26 +18,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SavedViewModel @Inject constructor(
-    private val savedRealEstatesUseCase: GetUserSavedRealEstatesUseCase,
+    private val getUserSavedRealEstatesUseCase: GetUserSavedRealEstatesUseCase,
     private val unSaveARealEstateUseCase: UnSaveARealEstateUseCase
 ) : ViewModel() {
 
     private val _savedState = MutableStateFlow<SavedState>(SavedState.Idle)
-    val savedState = _savedState
+    val savedState : StateFlow<SavedState> = _savedState
 
-
-    lateinit var savedEstates: StateFlow<List<RealEstate>>
+    private val _savedRealEstates = MutableStateFlow<List<RealEstate>>(emptyList())
+    val savedRealEstates : StateFlow<List<RealEstate>> = _savedRealEstates
+    private val _errorEvent = MutableSharedFlow<String>()
+    val errorEvent: SharedFlow<String> = _errorEvent
     fun getUserSaved() {
         _savedState.value = SavedState.Loading
         viewModelScope.launch {
-            savedEstates =
-                savedRealEstatesUseCase.getUserSavedRealEstates()
-                    .stateIn(
-                        scope = viewModelScope,
-                        started = SharingStarted.WhileSubscribed(5000),
-                        initialValue = emptyList()
-                    )
-            _savedState.value = SavedState.Success
+            getUserSavedRealEstatesUseCase.getUserSavedRealEstates().collect {savedRealEstates->
+                _savedRealEstates.value = savedRealEstates
+                _savedState.value = SavedState.Success
+            }
         }
     }
 
@@ -44,12 +43,16 @@ class SavedViewModel @Inject constructor(
         getUserSaved()
     }
 
+
     fun unSave(id: Int) {
         viewModelScope.launch {
-            unSaveARealEstateUseCase.unSaveARealEstate(id)
+            val res = unSaveARealEstateUseCase.unSaveARealEstate(id)
+            if (res.isFailure) {
+                val message = res.exceptionOrNull()?.message ?: "Unknown error"
+                _errorEvent.emit(message)
+            }
         }
     }
-
 
 }
 

@@ -20,7 +20,6 @@ data class RealEstateEntity(
     val rooms: Int,
     val images: List<String>,
     val uploaderInfo: UserInfoEntity,
-    var isRequested :Boolean?,
-    var isSaved : Boolean?,
-    val isNearest : Boolean = false
+    var isRequested :Boolean,
+    var isSaved : Boolean
 )

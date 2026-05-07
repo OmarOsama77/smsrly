@@ -39,7 +39,7 @@ fun UploadedItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .clickable() {
-                navController.navigate(ShowDetailsRoute(realEstate, true))
+                navController.navigate(ShowDetailsRoute(realEstate.id!!, true))
             }
     ) {
         AsyncImage(

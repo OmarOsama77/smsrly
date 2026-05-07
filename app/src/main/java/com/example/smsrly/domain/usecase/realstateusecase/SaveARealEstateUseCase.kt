@@ -6,7 +6,7 @@ import javax.inject.Inject
 class SaveARealEstateUseCase @Inject constructor(
     private val realEstateRepo: IRealEstateRepo
 ) {
-    suspend fun saveARealEstate(id: Int): Result<String> {
+    suspend fun saveARealEstate(id: Int) :Result<String>{
         return realEstateRepo.saveARealEstate(id)
     }
 }

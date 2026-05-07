@@ -5,10 +5,10 @@ import com.example.smsrly.domain.repository.IRealEstateRepo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class GetUserRequestsUseCase @Inject constructor(
+class GetRealEstateByIdUseCase @Inject constructor(
     private val realEstateRepo: IRealEstateRepo
-) {
-    fun getUserRequests(): Flow<List<RealEstate>> {
-        return realEstateRepo.getUserRequests()
+){
+    fun getRealEstateById(id:Int): Flow<RealEstate> {
+        return realEstateRepo.getRealEstateById(id)
     }
 }

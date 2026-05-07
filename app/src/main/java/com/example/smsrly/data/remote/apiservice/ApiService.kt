@@ -17,7 +17,7 @@ import com.example.smsrly.data.remote.dto.signup.SignupSuccessDto
 import com.example.smsrly.data.remote.dto.signup.userimage.UserImageSuccessDto
 import com.example.smsrly.data.remote.dto.tokens.RefreshTokenDtoSuccess
 import com.example.smsrly.data.remote.dto.user.DeleteUserDto
-import com.example.smsrly.data.remote.dto.user.GetUserResponse
+import com.example.smsrly.data.remote.dto.user.UserDto
 import com.example.smsrly.data.remote.dto.user.GetUsersDataDtoRequest
 import com.example.smsrly.data.remote.dto.user.UserInfoDto
 import okhttp3.MultipartBody
@@ -59,7 +59,7 @@ interface ApiService {
 
     @GET(ApiConstants.userData)
     suspend fun getUserData(
-    ): Response<GetUserResponse>
+    ): Response<UserDto>
 
     @POST(ApiConstants.uploadRealState)
     suspend fun uploadRealState(

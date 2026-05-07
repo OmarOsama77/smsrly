@@ -5,15 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.smsrly.domain.models.RealEstate
 import com.example.smsrly.domain.models.User
-import com.example.smsrly.domain.observer.IConnectivityObserver
-import com.example.smsrly.domain.usecase.networkobserverusecases.NetworkObserverUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.GetAllRealEstatesUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.GetNearestRealEstateUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.SaveARealEstateUseCase
 import com.example.smsrly.domain.usecase.realstateusecase.UnSaveARealEstateUseCase
 import com.example.smsrly.domain.usecase.userusecase.GetUserDataUseCase
-import com.example.smsrly.domain.usecase.userusecase.GetUserFlowUseCase
-import com.example.smsrly.presentation.ui.screens.chats.viewmodel.states.ChatsState
 import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.AllRealEstatesState
 import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.NearestRealEstateState
 import com.example.smsrly.presentation.ui.screens.home.viewmodel.states.UserState
@@ -22,105 +18,91 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getUserFlowUseCase: GetUserFlowUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
     private val getAllRealEstateUseCase: GetAllRealEstatesUseCase,
     private val getNearestRealEstateUseCase: GetNearestRealEstateUseCase,
     private val saveARealEstateUseCase: SaveARealEstateUseCase,
     private val unSaveARealEstateUseCase: UnSaveARealEstateUseCase,
-    private val networkStatusUseCase: NetworkObserverUseCase
 ) :
     ViewModel() {
-    private val _networkStatus = MutableStateFlow(IConnectivityObserver.Status.UnAvailable)
-    val networkStatus : StateFlow<IConnectivityObserver.Status> = _networkStatus
-    private val _allRealEstatesState = MutableStateFlow<AllRealEstatesState>(AllRealEstatesState.Idle)
+
+    private val _allRealEstatesState =
+        MutableStateFlow<AllRealEstatesState>(AllRealEstatesState.Idle)
     val allRealEstatesState: StateFlow<AllRealEstatesState> = _allRealEstatesState
     private val _userState = MutableStateFlow<UserState>(UserState.Idle)
     val userState: StateFlow<UserState> = _userState
 
-    val user: StateFlow<User?> = getUserFlowUseCase.getUser()
+    private val _user = MutableStateFlow<User?>(null)
+    val user: StateFlow<User?> = _user
 
-    val allRealEstates: StateFlow<Map<Int, RealEstate>> =
-        getAllRealEstateUseCase.getRealEstatesObj()
+    private val _allRealEstates = MutableStateFlow<List<RealEstate>>(emptyList())
+    val allRealEstates: StateFlow<List<RealEstate>> = _allRealEstates
     private val _nearestRealEstateState =
         MutableStateFlow<NearestRealEstateState>(NearestRealEstateState.Idle)
-    val nearestRealEstateState : StateFlow<NearestRealEstateState> = _nearestRealEstateState
+    val nearestRealEstateState: StateFlow<NearestRealEstateState> = _nearestRealEstateState
 
-    val nearestRealEstate = getNearestRealEstateUseCase.getNearestRealEstateObject()
+    private val _nearestRealEstates = MutableStateFlow<List<RealEstate>>(emptyList())
+    val nearestRealEstates: StateFlow<List<RealEstate>> = _nearestRealEstates
 
     private val _errorEvent = MutableSharedFlow<String>()
-    val errorEvent : SharedFlow<String> = _errorEvent
+    val errorEvent: SharedFlow<String> = _errorEvent
 
 
     init {
-        getNetworkFlow()
-        fetchUserData()
-        fetchAllRealEstates()
-        fetchNearestRealEstate()
+        getUserData()
+        getAllRealEstates()
+        getNearestRealEstates()
     }
 
 
-    fun fetchUserData() {
+    fun getUserData() {
         _userState.value = UserState.Loading
         viewModelScope.launch {
-            val res = getUserDataUseCase.fetchUserData()
-            if (res.isSuccess) {
+            getUserDataUseCase().collect { user ->
+                _user.value = user
                 _userState.value = UserState.Success
-            } else {
-                val message = res.exceptionOrNull()?.message?:"Unknown error"
-                _errorEvent.emit(message)
-                _userState.value = UserState.Failed(message)
             }
-
         }
     }
 
-    fun fetchAllRealEstates() {
+    fun getAllRealEstates() {
         _allRealEstatesState.value = AllRealEstatesState.Loading
         viewModelScope.launch {
-            val res = getAllRealEstateUseCase.getAllRealEstates()
-            Log.d("The res is ",res.toString())
-            if (res.isSuccess) {
+            getAllRealEstateUseCase.getAllRealEstates().collect { realEstatesList ->
                 _allRealEstatesState.value = AllRealEstatesState.Success
-            } else {
-                val message = res.exceptionOrNull()?.message?:"Unknown error"
-                Log.d("Hey omar i failed to fetch all",message)
-                _allRealEstatesState.value =
-                    AllRealEstatesState.Failed(message)
-                _errorEvent.emit(message)
+                _allRealEstates.value = realEstatesList
             }
+
         }
     }
 
-    fun fetchNearestRealEstate() {
+    fun getNearestRealEstates() {
         _nearestRealEstateState.value = NearestRealEstateState.Loading
         viewModelScope.launch {
-            val res = getNearestRealEstateUseCase.getNearestRealEstate()
-            if (res.isSuccess) {
+            getNearestRealEstateUseCase().collect { realEstatesList ->
                 _nearestRealEstateState.value = NearestRealEstateState.Success
-            } else {
-                val message = res.exceptionOrNull()?.message?:"Unknown error"
-                _nearestRealEstateState.value =
-                    NearestRealEstateState.Failed(message)
-                _errorEvent.emit(message)
+                _nearestRealEstates.value = realEstatesList
             }
         }
     }
-
-
 
 
     fun saveARealEstate(id: Int) {
         viewModelScope.launch {
             val res = saveARealEstateUseCase.saveARealEstate(id)
+
             if (res.isFailure) {
-                val message  = res.exceptionOrNull()?.message?:"Unknown error"
-                _errorEvent.emit(message)
+                _errorEvent.emit(res.exceptionOrNull()?.message ?: "Unknown error")
+            } else {
+                Log.d("om here", "i thin")
+                Log.d("the res ", res.getOrNull()!!)
             }
         }
     }
@@ -129,19 +111,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             val res = unSaveARealEstateUseCase.unSaveARealEstate(id)
             if (res.isFailure) {
-                val message  = res.exceptionOrNull()?.message?:"Unknown error"
+                val message = res.exceptionOrNull()?.message ?: "Unknown error"
                 _errorEvent.emit(message)
             }
         }
     }
 
-    fun getNetworkFlow(){
-        viewModelScope.launch {
-            networkStatusUseCase.invoke().collect {
-                _networkStatus.value = it
-            }
-        }
-    }
+
 }
 
 
